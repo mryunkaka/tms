@@ -13,7 +13,7 @@
 | Pemeriksaan | Hasil | Perintah/versi | Bukti atau catatan |
 |---|---|---|---|
 | Perubahan dan threat model | PASS | Review diff, PRD, SECURITY.md | Server mengunci kuota dalam transaksi; lookup menggunakan POST body; akses admin diberi guard role. Panel admin menyediakan alur sunting katalog dan jadwal. |
-| Unit/integration/e2e | PASS | `npm test` | 14 suite, 58 test lulus. HTTP test auth memakai throttler mock. |
+| Unit/integration/e2e | PASS | `npm test` | 15 suite, 62 test lulus. Termasuk tes service worker offline; HTTP test auth memakai throttler mock. |
 | Lint/typecheck/build | PASS | `npm run lint`, `npm run typecheck`, `npm run build` | Semua workspace lulus. Production build menghasilkan route `/`, `/admin`, `/booking/status`, destination/trip detail, sitemap, robots dan manifest. |
 | Prisma schema/migration | PASS | `npm run db:validate`, `npm run db:deploy` | Schema valid; tidak ada migration tertunda. `migrate dev` gagal membuat shadow DB karena role aplikasi tidak punya CREATEDB; gunakan `db:deploy` untuk menerapkan migration tersedia. |
 | PostgreSQL booking race/expiry | PASS | `npm run db:booking:test` | Dua request untuk kapasitas satu hanya membuat satu booking; expiry melepas hold sekali. |
@@ -26,6 +26,7 @@
 | Backup/restore drill | BLOCKED P0 | Review catatan operasi lokal | Dump `pg_restore --list` sebelumnya lulus, namun itu bukan restore. `createdb` pada cluster aktif ditolak karena role `tms_app` tidak punya CREATEDB; percobaan `initdb` terisolasi gagal pada lingkungan Windows (`utf8_and_win` tidak ditemukan). Automatic approval sebelumnya juga menolak metode perubahan `pg_hba.conf`. Cluster aktif, konfigurasi, dan service tidak diubah oleh percobaan tersebut. |
 | Akses lokal | PASS | HTTP probe `127.0.0.1:8085` | `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` semuanya HTTP 200 setelah service NSSM `nodejs` direstart. CORS preflight 204 dan Origin asing 401. |
 | Urutan destinasi | PASS | DTO/service/UI tests; Prisma deploy | Integer order dibatasi 0..2.147.483.647; input null, pecahan, negatif dan overflow ditolak. Migration menambah kolom default 0; pohon mengurutkan sibling menurut sortOrder dan nama. Edit trip mempertahankan posisi kunjungan lama; audit log memuat nilai sortOrder sebelum/sesudah. |
+| PWA offline shell | PASS | Service worker VM tests; HTTP probe | Cache hanya `/offline.html`; navigasi offline, termasuk admin, menerima shell generik. API POST tidak dicegat; versi cache lama TMS dibersihkan tanpa menyentuh cache lain. `/sw.js` dan `/offline.html` HTTP 200. |
 
 ## Temuan
 

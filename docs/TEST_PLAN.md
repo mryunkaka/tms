@@ -55,7 +55,7 @@ Seluruh test bisnis mengacu pada `BUSINESS_FLOW.md` dan state machine PRD. Test 
 | OPS-03 | Export manifest | Hanya admin; jadwal tepat, UTF-8, data minimum, akses tercatat. |
 | REF-01 | Refund manual | Hanya admin, alasan/jumlah/bukti tercatat, state `CANCELLED -> REFUND_PENDING -> REFUNDED`. |
 | SEO-01 | Metadata, sitemap, robots, JSON-LD, OG | Slug/metadata unik dan valid; tidak ada fakta destinasi tanpa sumber owner. |
-| PWA-01 | Offline | Shell/konten publik aman tersedia; booking/admin/payment tidak cache atau berfungsi offline. |
+| PWA-01 | Offline | Shell statis tersedia saat navigasi offline; katalog, jadwal, kuota, booking, admin, dan pembayaran tidak dicache dan memerlukan jaringan. Implementasi `sw.js` mem-cache hanya `/offline.html`; tes worker memeriksa fallback navigasi dan bypass API POST. |
 
 ## Data uji
 
