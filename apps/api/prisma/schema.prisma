@@ -14,6 +14,23 @@ enum RoleName {
   CUSTOMER
 }
 
+enum TripStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum BookingStatus {
+  PENDING_DP
+  DP_PAID
+  PAID_IN_FULL
+  EXPIRED
+  CANCELLED
+  COMPLETED
+  REFUND_PENDING
+  REFUNDED
+}
+
 model User {
   id           String         @id @default(cuid())
   email        String         @unique
@@ -23,6 +40,7 @@ model User {
   updatedAt    DateTime       @updatedAt
   roles        UserRole[]
   refreshTokens RefreshToken[]
+  auditLogs     AuditLog[]
 }
 
 model Role {
@@ -52,4 +70,117 @@ model RefreshToken {
 
   @@index([familyId, revokedAt])
   @@index([userId, expiresAt])
+}
+
+model Destination {
+  id          String        @id @default(cuid())
+  slug        String        @unique
+  name        String
+  description String?
+  isActive    Boolean       @default(false)
+  parentId    String?
+  parent      Destination?  @relation("DestinationTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children    Destination[] @relation("DestinationTree")
+  trips       TripDestination[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([parentId, isActive])
+}
+
+model Trip {
+  id                 String             @id @default(cuid())
+  slug               String             @unique
+  name               String
+  summary            String
+  durationDays       Int
+  itinerary          Json
+  inclusions         String[]
+  exclusions         String[]
+  meetingPoint       String
+  terms              String
+  cancellationPolicy String
+  status             TripStatus         @default(DRAFT)
+  destinations       TripDestination[]
+  schedules          TripSchedule[]
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  @@index([status, updatedAt])
+}
+
+model TripDestination {
+  tripId        String
+  destinationId String
+  position      Int
+  isPrimary     Boolean     @default(false)
+  trip          Trip        @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  destination   Destination @relation(fields: [destinationId], references: [id], onDelete: Restrict)
+
+  @@id([tripId, destinationId])
+  @@unique([tripId, position])
+  @@index([destinationId, tripId])
+}
+
+model TripSchedule {
+  id          String   @id @default(cuid())
+  tripId      String
+  departureAt DateTime
+  capacity    Int
+  priceIdr    Int
+  minimumPax  Int
+  heldSeats   Int      @default(0)
+  soldSeats   Int      @default(0)
+  isActive    Boolean  @default(false)
+  trip        Trip     @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  bookings    Booking[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tripId, departureAt, isActive])
+}
+
+model Booking {
+  id                       String        @id @default(cuid())
+  code                     String        @unique
+  scheduleId               String
+  bookerName               String
+  email                    String
+  phone                    String
+  contactVerificationHash  String
+  status                   BookingStatus @default(PENDING_DP)
+  participantCount         Int
+  unitPriceIdr             Int
+  totalPriceIdr            Int
+  amountDueIdr             Int
+  holdExpiresAt            DateTime
+  schedule                 TripSchedule  @relation(fields: [scheduleId], references: [id], onDelete: Restrict)
+  participants             Participant[]
+  createdAt                DateTime      @default(now())
+  updatedAt                DateTime      @updatedAt
+
+  @@index([scheduleId, status, holdExpiresAt])
+  @@index([email, createdAt])
+}
+
+model Participant {
+  id        String  @id @default(cuid())
+  bookingId String
+  fullName  String
+  booking   Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+}
+
+model AuditLog {
+  id         String   @id @default(cuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String
+  beforeData Json?
+  afterData  Json?
+  createdAt  DateTime @default(now())
+  actor      User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId, createdAt])
+  @@index([actorId, createdAt])
 }

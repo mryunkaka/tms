@@ -56,5 +56,6 @@ Referensi resmi: [Resend pricing](https://resend.com/pricing), [Brevo pricing pl
 ## Batas operasional
 
 - Parameter bisnis DP, hold, minimum pax, timezone dan kebijakan disimpan sebagai konfigurasi; aturan default sumber kebenarannya `BUSINESS_FLOW.md`.
+- **ASUMSI implementasi booking:** nominal DP yang menghasilkan pecahan rupiah dibulatkan ke atas agar tidak ada kekurangan pembayaran; minta pemilik bisnis mengonfirmasi aturan ini sebelum transaksi produksi.
 - Timestamp DB UTC; tampilan/batas kalender bisnis `Asia/Makassar`; IDR integer.
 - Belum ada keputusan final target availability, RPO/RTO, retensi PII, kebijakan refund atau akun guest; lihat pertanyaan terbuka PRD.

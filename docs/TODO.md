@@ -6,6 +6,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 - **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Homepage, API health, login admin, dan dump `pg_restore --list` telah diverifikasi. Restore drill ke database terisolasi masih perlu dilakukan.
 - **TMS-014 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Implementasi auth sudah ada dan diverifikasi langsung terhadap API/database lokal: login admin, cookie refresh, rotasi token, logout menolak refresh berikutnya, serta reuse token lama mencabut token baru dalam satu family. Tes integrasi otomatis, refresh paralel, throttle nyata dan cookie Secure/CORS di browser tetap perlu.
+- **TMS-016 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Skema hierarki destinasi/trip/jadwal, audit log, API pohon destinasi publik, CRUD/archive destinasi admin, filter daftar trip publik, dan pembuatan draft trip admin sudah ada. CRUD trip/jadwal lengkap, detail trip, UI admin, validasi publish dan konten pemilik masih perlu.
 
 ## Belum Dikerjakan (To Do)
 
@@ -66,6 +67,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Atas permintaan pemilik, memperluas cakupan produk agar operator satu bisnis dapat menyediakan trip di banyak daerah; Kotabaru menjadi daerah awal. Daerah disimpan sebagai hierarki konfigurasi dan trip dapat terkait ke beberapa destinasi.
 - **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. Saat branch dimulai PostgreSQL belum dipasang sehingga integrasi DB dan restore drill masih tertunda.
 - **2026-11-01:** Memasang PostgreSQL 18.6 lokal, membatasi listener ke loopback, membuat database dan user aplikasi, menerapkan migration/seed, dan membangun production app. NSSM `nodejs` bergantung pada PostgreSQL dan auto-start; virtual host TMS ditambahkan ke Nginx existing `WebStack-Nginx`. Homepage, health, login admin dan PHP vhost diverifikasi; backup archive list lulus, restore drill belum dilakukan.
+- **2026-11-01:** Menerapkan dua migration aditif untuk destinasi, trip, jadwal, booking, peserta, audit dan invariant kapasitas; menambah API admin/public destinasi, pembuatan draft trip admin, dan katalog trip publik. Root lint/test/typecheck/build lulus (26 test); konten tetap kosong sampai owner memasukkan dan mengaktifkannya.
 
 ## Terblokir (Blocked)
 
