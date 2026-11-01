@@ -2,12 +2,12 @@ import { BadRequestException, ConflictException, Injectable, NotFoundException }
 import { PrismaService } from '../database/prisma.service.js';
 import type { CreateDestinationDto, UpdateDestinationDto } from './destination.dto.js';
 
-type DestinationRow = { id: string; parentId: string | null; slug: string; name: string };
-type PublicDestination = { id: string; slug: string; name: string; children: PublicDestination[] };
+type DestinationRow = { id: string; parentId: string | null; slug: string; name: string; sortOrder?: number };
+type PublicDestination = { id: string; slug: string; name: string; sortOrder: number; children: PublicDestination[] };
 
 export function buildDestinationTree(rows: DestinationRow[]): PublicDestination[] {
   const nodes = new Map<string, PublicDestination>();
-  for (const row of rows) nodes.set(row.id, { id: row.id, slug: row.slug, name: row.name, children: [] });
+  for (const row of rows) nodes.set(row.id, { id: row.id, slug: row.slug, name: row.name, sortOrder: row.sortOrder ?? 0, children: [] });
   const roots: PublicDestination[] = [];
   for (const row of rows) {
     const node = nodes.get(row.id)!;
@@ -16,7 +16,7 @@ export function buildDestinationTree(rows: DestinationRow[]): PublicDestination[
     else if (!row.parentId) roots.push(node);
   }
   const sort = (items: PublicDestination[]) => {
-    items.sort((a, b) => a.name.localeCompare(b.name, 'id'));
+    items.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'id'));
     items.forEach((item) => sort(item.children));
   };
   sort(roots);
@@ -28,7 +28,7 @@ export class DestinationsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listAdmin() {
-    return this.prisma.destination.findMany({ include: { parent: true }, orderBy: { name: 'asc' } });
+    return this.prisma.destination.findMany({ include: { parent: true }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] });
   }
 
   async create(input: CreateDestinationDto, actorId: string) {
@@ -94,7 +94,7 @@ export class DestinationsService {
   async publicTree() {
     const rows = await this.prisma.destination.findMany({
       where: { isActive: true },
-      select: { id: true, parentId: true, slug: true, name: true },
+      select: { id: true, parentId: true, slug: true, name: true, sortOrder: true },
     });
     return buildDestinationTree(rows);
   }

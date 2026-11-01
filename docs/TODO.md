@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** `npm audit` menemukan 31 advisory low/moderate pada rantai dependency development/test; production-only audit bersih. Perbaiki melalui pembaruan kompatibel dan verifikasi ulang, tanpa `--force` yang mengusulkan downgrade mayor tooling.
+- **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** Audit full masih melaporkan 31 advisory low/moderate pada dependency development/test (npm 11.20.0); `npm audit --omit=dev` bersih (0). `npm update --package-lock-only` tanpa perubahan efektif. Temuan mencakup dependency berjenjang Jest/ESLint/Nest CLI; audit fix hanya mengusulkan downgrade major, tidak diterapkan. Lanjutkan review advisory dan upgrade teruji; jangan `--force`.
 
 ## Belum Dikerjakan (To Do)
 
@@ -20,7 +20,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ### Tahap 1 — inti monorepo, auth, katalog, booking
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Siapkan monorepo npm workspace `apps/web`, `apps/api`, `packages/shared`, toolchain TypeScript/lint/test/build, validasi env, `.env.example` dan CI lokal lint/test.
-- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: TBD]** Lakukan backup/restore drill ke database terisolasi setelah metode akses DB yang aman disetujui. `pg_restore --list` hanya memvalidasi arsip dan bukan restore.
+- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: 2026-11-02]** Belum selesai: `createdb` ke DB aktif ditolak karena role `tms_app` tidak punya hak membuat DB; percobaan `initdb` terisolasi gagal pada lingkungan Windows (`utf8_and_win` tidak ditemukan). Tidak mengubah cluster aktif, `pg_hba.conf`, atau service. Perlu lingkungan restore terisolasi yang didukung/diizinkan; `pg_restore --list` bukan restore.
 
 ### Tahap 2 — pembayaran sandbox, queue, notifikasi
 
@@ -45,7 +45,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **TMS-015 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Homepage SSR dengan filter, halaman daerah/trip, status booking, metadata, sitemap/robots/JSON-LD dan layout mobile dibuat. Konten bisnis tetap menunggu pemilik.
 - **TMS-017 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Booking guest, snapshot harga, lock kuota PostgreSQL, scheduler expiry, idempotent release dan acceptance race/expiry sudah diuji dengan PostgreSQL lokal.
 - **TMS-018 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Lookup dan pembatalan menerima kode serta email/telepon melalui POST body; hasil lookup meminimalkan PII dan endpoint dibatasi rate limit.
-- **TMS-016 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** CRUD destinasi/trip/jadwal, hierarki dan banyak destinasi, audit, syarat publish, API publik filter/detail, serta panel admin buat/sunting/aktif/nonaktif/archive tersedia.
+- **TMS-016 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** CRUD destinasi/trip/jadwal, hierarki dan banyak destinasi, audit, syarat publish, API publik filter/detail, serta panel admin buat/sunting/aktif/nonaktif/archive tersedia. Pengurutan destinasi kini diatur lewat `sortOrder` admin dan ditampilkan konsisten pada pohon publik.
 
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
 - **TMS-002 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat `AGENTS.md` serta panduan commit/prioritas keamanan dan DoD. Commit `d2e921c`.
@@ -72,6 +72,8 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-02:** Memperbaiki deduplikasi refresh paralel dalam proses API setelah uji concurrency menemukan hasil rotasi berlainan; menambah unit/integration test auth concurrency dan tes cookie/origin. Lint, test (46), typecheck, build, schema/deploy migration, booking/auth PostgreSQL race, audit production (0), dan probe route lokal lulus. Restore drill P0 tetap tertahan.
 - **2026-11-02:** Probe same-origin CORS menghasilkan 204 dengan origin eksplisit dan credentials; POST login dari Origin asing menghasilkan 401. Cookie produksi diuji pada unit test, belum melalui browser.
 - **2026-11-02:** `npm audit fix --dry-run` tidak menawarkan update kompatibel untuk 31 advisory dev; remediation otomatis yang disarankan menurunkan versi mayor toolchain, jadi tidak diterapkan.
+- **2026-11-02:** Menutup gap PRD untuk pengurutan destinasi: field integer `sortOrder` dengan default migrasi 0, input admin create/edit, validasi rentang DB dan urutan pohon publik. Tes RED→GREEN meliputi urutan/tie, validasi negatif/pecahan/null/out-of-range, dan input panel.
+- **2026-11-02:** Migration pengurutan destinasi terpasang di PostgreSQL lokal; lint, 56 tes, typecheck, build, booking/auth DB checks dan validasi schema lulus. Service `nodejs` berjalan dari `D:\Project\tms`; setelah restart, `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` HTTP 200.
 - **2026-11-02:** Commit `8d7ff23 feat(stage-1): complete catalogue and booking flows` sudah dipush ke `origin/main`. Tahap 1 tetap blocked oleh restore drill P0.
 
 ## Terblokir (Blocked)

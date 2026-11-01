@@ -77,6 +77,7 @@ model Destination {
   slug        String        @unique
   name        String
   description String?
+  sortOrder   Int           @default(0)
   isActive    Boolean       @default(false)
   parentId    String?
   parent      Destination?  @relation("DestinationTree", fields: [parentId], references: [id], onDelete: Restrict)

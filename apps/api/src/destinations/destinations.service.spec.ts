@@ -9,7 +9,7 @@ describe('buildDestinationTree', () => {
       { id: 'parent', parentId: null, slug: 'parent', name: 'Induk' },
     ]);
 
-    expect(result).toEqual([{ id: 'parent', slug: 'parent', name: 'Induk', children: [{ id: 'child', slug: 'child', name: 'Anak', children: [] }] }]);
+    expect(result).toEqual([{ id: 'parent', slug: 'parent', name: 'Induk', sortOrder: 0, children: [{ id: 'child', slug: 'child', name: 'Anak', sortOrder: 0, children: [] }] }]);
   });
 
   it('does not expose a child whose parent is inactive', () => {
@@ -18,6 +18,17 @@ describe('buildDestinationTree', () => {
     ]);
 
     expect(result).toEqual([]);
+  });
+
+  it('sorts siblings by operator order and uses the name for ties', () => {
+    const result = buildDestinationTree([
+      { id: 'second', parentId: null, slug: 'second', name: 'Bali', sortOrder: 20 },
+      { id: 'tie-z', parentId: null, slug: 'tie-z', name: 'Zamrud', sortOrder: 10 },
+      { id: 'first', parentId: null, slug: 'first', name: 'Kotabaru', sortOrder: 0 },
+      { id: 'tie-a', parentId: null, slug: 'tie-a', name: 'Anyer', sortOrder: 10 },
+    ] as Parameters<typeof buildDestinationTree>[0]);
+
+    expect(result.map(({ id }) => id)).toEqual(['first', 'tie-a', 'tie-z', 'second']);
   });
 });
 
@@ -39,6 +50,16 @@ describe('DestinationsService admin operations', () => {
   let service: DestinationsService;
 
   beforeEach(() => { jest.clearAllMocks(); service = new DestinationsService(prisma as never); });
+
+  it('persists the requested order when creating a destination', async () => {
+    await service.create({ slug: 'bali', name: 'Bali', sortOrder: 5 }, 'admin-1');
+    expect(tx.destination.create).toHaveBeenCalledWith({ data: { slug: 'bali', name: 'Bali', sortOrder: 5, isActive: false } });
+  });
+
+  it('persists the requested order when updating a destination', async () => {
+    await service.update('destination-1', { sortOrder: 5 }, 'admin-1');
+    expect(tx.destination.update).toHaveBeenCalledWith({ where: { id: 'destination-1' }, data: { sortOrder: 5 } });
+  });
 
   it('creates destinations inactive until explicitly published', async () => {
     const result = await service.create({ slug: 'kotabaru', name: 'Kotabaru', parentId: undefined }, 'admin-1');

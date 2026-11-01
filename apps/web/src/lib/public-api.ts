@@ -1,4 +1,4 @@
-export type DestinationNode = { id: string; slug: string; name: string; children: DestinationNode[] };
+export type DestinationNode = { id: string; slug: string; name: string; sortOrder: number; children: DestinationNode[] };
 export type PublicSchedule = { id: string; departureAt: string; priceIdr: number; availableSeats: number; minimumPax: number };
 export type PublicTrip = {
   id: string; slug: string; name: string; summary: string; durationDays: number;

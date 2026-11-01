@@ -2,8 +2,8 @@
 
 ## Ringkasan
 
-- Commit basis: `8d7ff23`; laporan diperbarui setelah perbaikan race refresh pada working tree 2026-11-02.
-- Scope: auth/admin, katalog, booking guest, capacity/expiry, public web, local PostgreSQL/Nginx/NSSM, dependency dan dokumentasi.
+- Commit basis: `17da314`; laporan diperbarui setelah implementasi pengurutan destinasi pada working tree 2026-11-02.
+- Scope: auth/admin, katalog termasuk urutan destinasi, booking guest, capacity/expiry, public web, local PostgreSQL/Nginx/NSSM, dependency dan dokumentasi.
 - Pemeriksa/tanggal: Codex, 2026-11-02 (WITA).
 - Runtime/tool: Node 24.22.1, npm 11, PostgreSQL 18.6, Next.js 16.4.3, NestJS 12.3.2, Prisma 7.10.1.
 - Hasil: **BLOCKED** — pemeriksaan kode dan aplikasi lulus, tetapi P0 restore drill belum selesai karena metode perubahan akses sementara ditolak automatic approval review sebelum eksekusi. Tahap 1 belum boleh ditandai selesai.
@@ -13,7 +13,7 @@
 | Pemeriksaan | Hasil | Perintah/versi | Bukti atau catatan |
 |---|---|---|---|
 | Perubahan dan threat model | PASS | Review diff, PRD, SECURITY.md | Server mengunci kuota dalam transaksi; lookup menggunakan POST body; akses admin diberi guard role. Panel admin menyediakan alur sunting katalog dan jadwal. |
-| Unit/integration/e2e | PASS | `npm test` | 13 suite, 46 test lulus. HTTP test auth memakai throttler mock. |
+| Unit/integration/e2e | PASS | `npm test` | 14 suite, 56 test lulus. HTTP test auth memakai throttler mock. |
 | Lint/typecheck/build | PASS | `npm run lint`, `npm run typecheck`, `npm run build` | Semua workspace lulus. Production build menghasilkan route `/`, `/admin`, `/booking/status`, destination/trip detail, sitemap, robots dan manifest. |
 | Prisma schema/migration | PASS | `npm run db:validate`, `npm run db:deploy` | Schema valid; tidak ada migration tertunda. `migrate dev` gagal membuat shadow DB karena role aplikasi tidak punya CREATEDB; gunakan `db:deploy` untuk menerapkan migration tersedia. |
 | PostgreSQL booking race/expiry | PASS | `npm run db:booking:test` | Dua request untuk kapasitas satu hanya membuat satu booking; expiry melepas hold sekali. |
@@ -23,14 +23,15 @@
 | Validasi/XSS/CSRF/CORS/Helmet | PASS DENGAN TEMUAN | Unit controller dan probe HTTP lokal | DTO whitelist/forbid extra, Helmet, CORS origin eksplisit, Origin check untuk mutasi. Cookie Secure/HttpOnly/SameSite=Lax dibuktikan pada unit test; preflight same-origin HTTP 204 dan login dari Origin asing HTTP 401. Pengujian browser ber-cookie masih perlu sebelum rilis. |
 | Logging/privacy/export | PASS | Review Pino middleware/serializers, logger tests | Pino menulis JSON stdout; request mendapat UUID, log akses menyimpan method/path tanpa query dan status saja. Test menutup redaksi kredensial/kontak dan objek arbitrer. Lookup tidak memasukkan PII ke URL. Export manifest belum termasuk Tahap 1. |
 | Deployment/network/permissions | LOCAL ONLY | Inspect services dan HTTP lokal | PostgreSQL, Node/NSSM dan Nginx berjalan; API/database bind loopback, service Node/Nginx LocalSystem. Jangan expose di LAN/internet; belum ada TLS/domain atau service account berhak minimum. |
-| Backup/restore drill | BLOCKED P0 | Review catatan operasi lokal | Dump `pg_restore --list` sebelumnya lulus, namun itu bukan restore. Automatic approval review menolak metode yang sementara mengubah `pg_hba.conf` sebelum command berjalan. Tidak ada perubahan konfigurasi dan tidak dicoba metode alternatif. |
-| Akses lokal | PASS | HTTP probe `127.0.0.1:8085` | `/`, `/admin`, `/booking/status`, dan `/api/v1/health` semuanya HTTP 200 setelah production build. |
+| Backup/restore drill | BLOCKED P0 | Review catatan operasi lokal | Dump `pg_restore --list` sebelumnya lulus, namun itu bukan restore. `createdb` pada cluster aktif ditolak karena role `tms_app` tidak punya CREATEDB; percobaan `initdb` terisolasi gagal pada lingkungan Windows (`utf8_and_win` tidak ditemukan). Automatic approval sebelumnya juga menolak metode perubahan `pg_hba.conf`. Cluster aktif, konfigurasi, dan service tidak diubah oleh percobaan tersebut. |
+| Akses lokal | PASS | HTTP probe `127.0.0.1:8085` | `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` semuanya HTTP 200 setelah service NSSM `nodejs` direstart. CORS preflight 204 dan Origin asing 401. |
+| Urutan destinasi | PASS | DTO/service/UI tests; Prisma deploy | Integer order dibatasi 0..2.147.483.647; input null, pecahan, negatif dan overflow ditolak. Migration menambah kolom default 0; pohon mengurutkan sibling dan tie nama secara deterministik. |
 
 ## Temuan
 
 | ID/severity | Reproduksi dan dampak | Mitigasi/keputusan | Owner | Target |
 |---|---|---|---|---|
-| SEC-01 / P0 | Restore dump ke database terisolasi belum diverifikasi; recovery aktual belum terbukti. | Tertahan pada gerbang automatic approval untuk metode perubahan akses sementara. Lanjutkan hanya dengan metode terisolasi yang disetujui; jangan menandai Tahap 1 selesai sampai bukti restore ada. | Engineering/ops | Sebelum menutup Tahap 1 |
+| SEC-01 / P0 | Restore dump ke database terisolasi belum diverifikasi; recovery aktual belum terbukti. Role aplikasi tak berhak membuat DB baru, dan upaya cluster sementara gagal membuat cluster pada locale Windows. | Belum ada lingkungan restore yang didukung dan disetujui. Jangan ubah cluster aktif/akses DB untuk melewati hambatan; jangan menandai Tahap 1 selesai sampai uji restore aman menghasilkan bukti. | Engineering/ops | Sebelum menutup Tahap 1 |
 | SEC-02 / P1 | 31 advisory low/moderate pada rantai tooling development/test. Tidak ada vulnerability dalam audit dependency production-only. `npm audit fix --dry-run` tidak menemukan pembaruan kompatibel; rekomendasi otomatis memerlukan downgrade major. | Jadwalkan upgrade toolchain terencana dan ulangi audit; tanpa `--force`. | Engineering | Sebelum rilis publik |
 | SEC-03 / P1 | Browser belum memverifikasi penyimpanan/pengiriman cookie refresh Secure pada alamat lokal. | Uji autentikasi dengan browser pada origin/domain deployment sebelum rilis publik. | Engineering | Sebelum rilis publik |
 

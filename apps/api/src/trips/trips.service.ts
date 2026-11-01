@@ -123,7 +123,7 @@ export class TripsService {
     const to = query.to ? new Date(query.to) : undefined;
     if (to && from > to) throw new BadRequestException('Rentang tanggal tidak valid.');
 
-    const rows = await this.prisma.destination.findMany({ where: { isActive: true }, select: { id: true, parentId: true, slug: true, name: true } });
+    const rows = await this.prisma.destination.findMany({ where: { isActive: true }, select: { id: true, parentId: true, slug: true, name: true, sortOrder: true } });
     const tree = buildDestinationTree(rows);
     const collect = (nodes: ReturnType<typeof buildDestinationTree>): string[] => nodes.flatMap((node) => [node.id, ...collect(node.children)]);
     const visibleIds = new Set(collect(tree));
@@ -162,7 +162,7 @@ export class TripsService {
   }
 
   async detailPublic(slug: string) {
-    const rows = await this.prisma.destination.findMany({ where: { isActive: true }, select: { id: true, parentId: true, slug: true, name: true } });
+    const rows = await this.prisma.destination.findMany({ where: { isActive: true }, select: { id: true, parentId: true, slug: true, name: true, sortOrder: true } });
     const collect = (nodes: ReturnType<typeof buildDestinationTree>): string[] => nodes.flatMap((node) => [node.id, ...collect(node.children)]);
     const destinationIds = collect(buildDestinationTree(rows));
     if (!destinationIds.length) throw new NotFoundException('Trip tidak ditemukan.');

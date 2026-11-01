@@ -85,21 +85,21 @@ describe('health route', () => {
 
   it('returns the active destination tree without authentication', async () => {
     await request(app.getHttpServer()).get('/api/v1/destinations').expect(200).expect([
-      { id: 'destination-1', slug: 'wilayah-test', name: 'Wilayah TEST', children: [
-        { id: 'destination-2', slug: 'lokasi-test', name: 'Lokasi TEST', children: [] },
+      { id: 'destination-1', slug: 'wilayah-test', name: 'Wilayah TEST', sortOrder: 0, children: [
+        { id: 'destination-2', slug: 'lokasi-test', name: 'Lokasi TEST', sortOrder: 0, children: [] },
       ] },
     ]);
     expect(prismaMock.destination.findMany).toHaveBeenCalledWith(expect.objectContaining({ where: { isActive: true } }));
   });
 
   it('protects destination management and creates drafts for admins', async () => {
-    const payload = { slug: 'kotabaru', name: 'Kotabaru' };
+    const payload = { slug: 'kotabaru', name: 'Kotabaru', sortOrder: 3 };
     await request(app.getHttpServer()).post('/api/v1/admin/destinations').send(payload).expect(401);
     const jwt = app.get(JwtService);
     const adminToken = await jwt.signAsync({ sub: 'admin-1', roles: ['ADMIN'] });
     await request(app.getHttpServer()).post('/api/v1/admin/destinations')
       .set('Authorization', `Bearer ${adminToken}`).send(payload).expect(201)
-      .expect({ id: 'destination-new', slug: 'kotabaru', name: 'Kotabaru', isActive: false });
+      .expect({ id: 'destination-new', slug: 'kotabaru', name: 'Kotabaru', sortOrder: 3, isActive: false });
   });
 
   it('lists only published trips and validates public search filters', async () => {
