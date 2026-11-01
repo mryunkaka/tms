@@ -1,0 +1,47 @@
+{
+  "name": "tms",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run db:generate && concurrently -k -n API,WEB \"npm run dev --workspace @tms/api\" \"npm run dev --workspace @tms/web\"",
+    "build": "npm run db:generate && npm run build --workspace @tms/shared && npm run build --workspace @tms/api && npm run build --workspace @tms/web",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run db:generate && npm run test --workspaces --if-present",
+    "typecheck": "npm run db:generate && npm run typecheck --workspaces --if-present",
+    "db:generate": "npm run db:generate --workspace @tms/api",
+    "db:validate": "npm run db:validate --workspace @tms/api",
+    "db:migrate": "npm run db:migrate --workspace @tms/api",
+    "db:seed": "npm run db:seed --workspace @tms/api",
+    "db:backup:test": "npm run db:backup:test --workspace @tms/api"
+  },
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.10.1",
+    "@types/supertest": "^6.0.3",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.1",
+    "globals": "^16.5.0",
+    "jest": "^30.5.2",
+    "supertest": "^7.1.4",
+    "ts-jest": "^29.4.15",
+    "typescript": "~6.0.3",
+    "typescript-eslint": "^8.48.1"
+  },
+  "allowScripts": {
+    "argon2@0.44.0": true,
+    "prisma@7.10.1": true,
+    "@prisma/engines@7.10.1": true,
+    "esbuild@0.28.2": true,
+    "@parcel/watcher@2.6.0": true
+  }
+}

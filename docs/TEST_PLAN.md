@@ -71,3 +71,10 @@ Seluruh test bisnis mengacu pada `BUSINESS_FLOW.md` dan state machine PRD. Test 
 - Pull request: unit, lint/typecheck/build, integrasi DB test, auth/state tests, secret/dependency check.
 - Nightly/pre-release: E2E penuh, konkurensi PostgreSQL, Midtrans sandbox (hanya key sandbox terisolasi), restore drill dan security checklist.
 - Simpan hasil rilis di `docs/security/` dan kegagalan/debug regresi di `docs/DEBUG_LOG.md`.
+# Tes fondasi Tahap 1
+
+- Workspace: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`.
+- API unit/e2e mencakup kontrak health, role admin, penolakan anonim dan role bukan admin, hash token refresh, reuse refresh, dan penolakan role non-admin saat login.
+- `npm run db:validate` dan `npm run db:generate` tidak memerlukan server DB.
+- Setelah PostgreSQL dipasang: jalankan `npm run db:migrate`, seed dua kali dan pastikan password tidak berubah; tambahkan tes persistence untuk login/refresh paralel, reuse, logout, migrasi, serta `npm run db:backup:test`.
+- Tes HTTP memock throttler agar test dapat berjalan tanpa dependensi layanan eksternal; batas rate login harus diverifikasi dengan guard nyata sebelum rilis. Automated test juga belum menggantikan tes integrasi PostgreSQL atau pengujian manual cookie Secure/CORS lintas origin di browser.

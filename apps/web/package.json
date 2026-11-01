@@ -1,0 +1,1 @@
+{"name":"@tms/web","version":"0.1.0","private":true,"scripts":{"dev":"next dev","build":"next build","lint":"eslint src --max-warnings=0","test":"jest --runInBand","typecheck":"tsc --noEmit"},"dependencies":{"@tms/shared":"*","next":"^16.4.3","react":"^19.3.1","react-dom":"^19.3.1"},"devDependencies":{"@types/react":"^19.2.7","@types/react-dom":"^19.2.3"}}
