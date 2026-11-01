@@ -55,6 +55,8 @@ Referensi resmi: [Resend pricing](https://resend.com/pricing), [Brevo pricing pl
 
 ## Batas operasional
 
+- **Refresh token paralel (Tahap 1):** dalam satu proses API, permintaan refresh bersamaan untuk hash token yang sama berbagi satu hasil rotasi. Pemakaian ulang setelah rotasi selesai tetap mencabut seluruh keluarga token. Ini mencakup setup NSSM satu proses saat ini; jika API dijalankan multi-worker/replica, koordinasi lintas proses harus dipindahkan ke primitive database/lock bersama sebelum skala tersebut.
+
 - Parameter bisnis DP, hold, minimum pax, timezone dan kebijakan disimpan sebagai konfigurasi; aturan default sumber kebenarannya `BUSINESS_FLOW.md`.
 - **ASUMSI implementasi booking:** nominal DP yang menghasilkan pecahan rupiah dibulatkan ke atas agar tidak ada kekurangan pembayaran; minta pemilik bisnis mengonfirmasi aturan ini sebelum transaksi produksi.
 - Timestamp DB UTC; tampilan/batas kalender bisnis `Asia/Makassar`; IDR integer.

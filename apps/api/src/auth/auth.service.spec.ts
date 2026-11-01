@@ -62,6 +62,25 @@ describe('AuthService', () => {
     }));
   });
 
+  it('shares one rotation result for concurrent refreshes using the same token', async () => {
+    const tx = {
+      refreshToken: {
+        findUnique: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({
+          id: 'token-1', tokenHash: hashRefreshToken('parallel-token'), familyId: 'family-1', userId: 'user-1',
+          expiresAt: new Date(Date.now() + 60_000), revokedAt: null,
+          user: { id: 'user-1', email: 'admin@example.test', isActive: true, roles: [{ role: { name: 'ADMIN' } }] },
+        }),
+        updateMany: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ count: 1 }),
+        create: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({}),
+      },
+    };
+    prisma.$transaction.mockImplementation((callback) => Promise.resolve((callback as (transaction: typeof tx) => unknown)(tx)));
+    const results = await Promise.all([service.refresh('parallel-token'), service.refresh('parallel-token')]);
+    expect(results[0].refreshToken).toBe(results[1].refreshToken);
+    expect(tx.refreshToken.findUnique).toHaveBeenCalledTimes(1);
+    expect(tx.refreshToken.create).toHaveBeenCalledTimes(1);
+  });
+
   it('revokes the current session during logout', async () => {
     await service.logout('active-token');
     expect(prisma.refreshToken.updateMany).toHaveBeenCalledWith(expect.objectContaining({

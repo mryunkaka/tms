@@ -22,6 +22,8 @@ export interface AuthResult {
 
 @Injectable()
 export class AuthService {
+  private readonly refreshesInFlight = new Map<string, Promise<AuthResult>>();
+
   constructor(private readonly prisma: PrismaService, private readonly jwt: JwtService, @Inject(APP_ENV) private readonly env: AppEnv) {}
 
   async login(email: string, password: string): Promise<AuthResult> {
@@ -35,6 +37,19 @@ export class AuthService {
   async refresh(rawToken?: string): Promise<AuthResult> {
     if (!rawToken) throw new UnauthorizedException(REFRESH_INVALID);
     const tokenHash = hashRefreshToken(rawToken);
+    const inFlight = this.refreshesInFlight.get(tokenHash);
+    if (inFlight) return inFlight;
+
+    const rotation = this.rotateRefresh(tokenHash);
+    this.refreshesInFlight.set(tokenHash, rotation);
+    try {
+      return await rotation;
+    } finally {
+      if (this.refreshesInFlight.get(tokenHash) === rotation) this.refreshesInFlight.delete(tokenHash);
+    }
+  }
+
+  private async rotateRefresh(tokenHash: string): Promise<AuthResult> {
     const now = new Date();
     const nextToken = randomBytes(32).toString('base64url');
     const nextHash = hashRefreshToken(nextToken);
