@@ -20,7 +20,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ### Tahap 1 — inti monorepo, auth, katalog, booking
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Siapkan monorepo npm workspace `apps/web`, `apps/api`, `packages/shared`, toolchain TypeScript/lint/test/build, validasi env, `.env.example` dan CI lokal lint/test.
-- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: 2026-11-02]** Belum selesai: `createdb` ke DB aktif ditolak karena role `tms_app` tidak punya hak membuat DB; percobaan `initdb` terisolasi sebelumnya gagal pada locale Windows (`utf8_and_win`). Binary 18.6 menyediakan `--no-locale --encoding=UTF8`, tetapi skrip untuk membangun cluster terisolasi/restore ditolak oleh kebijakan eksekusi sebelum berjalan. Tidak ada dump/cluster baru atau perubahan konfigurasi. Restore drill masih perlu dijalankan pada lingkungan yang diizinkan; `pg_restore --list` bukan restore.
+- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: 2026-11-02]** Belum selesai: `createdb` ke DB aktif ditolak karena role `tms_app` tidak punya hak membuat DB; percobaan `initdb` terisolasi sebelumnya gagal pada locale Windows (`utf8_and_win`). Binary 18.6 menyediakan `--no-locale --encoding=UTF8`, tetapi skrip untuk membangun cluster terisolasi/restore ditolak oleh kebijakan eksekusi sebelum berjalan. Pemeriksaan ulang menemukan tidak ada Docker/Podman atau service PostgreSQL sampingan; hanya cluster native aktif yang berjalan. Tidak ada dump/cluster baru atau perubahan konfigurasi. Restore drill masih perlu dijalankan pada lingkungan yang diizinkan; `pg_restore --list` bukan restore.
 
 ### Tahap 2 — pembayaran sandbox, queue, notifikasi
 
