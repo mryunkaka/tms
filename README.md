@@ -4,7 +4,7 @@ Sistem booking untuk satu operator open trip dan paket wisata di berbagai daerah
 
 ## Prasyarat pengembangan Windows
 
-- Node.js 24 LTS dan npm (belum dipasang/ditetapkan pada laptop saat Tahap 0).
+- Node.js 24 LTS dan npm 11.
 - PostgreSQL (gunakan installer resmi PostgreSQL; lihat [Architecture](docs/ARCHITECTURE.md)).
 - Git.
 - Redis belum diperlukan sampai Tahap 2.
@@ -27,6 +27,8 @@ npm run dev
 ```
 
 Web tersedia di `http://localhost:3000`, API di `http://localhost:3001`. Seed tidak mengganti password akun yang telah ada. `npm run db:backup:test` memakai `pg_dump` dan `pg_restore --list`; PostgreSQL client tools harus tersedia di PATH.
+
+Pada workstation Windows yang memakai NSSM/Nginx, lihat [panduan service lokal](ops/windows/README.md). URL lokal TMS adalah `http://127.0.0.1:8085`.
 
 Pemeriksaan lokal:
 
@@ -53,4 +55,5 @@ npm run db:validate
 - [Rencana pengujian](docs/TEST_PLAN.md)
 - [Laporan audit keamanan](docs/security/REPORT_TEMPLATE.md)
 - [Review keamanan dan kualitas Tahap 1](docs/security/2026-11-01-stage-1-foundation-review.md)
+- [Review deployment lokal Windows](docs/security/2026-11-01-local-windows-deployment-review.md)
 - [Desain dan rencana implementasi Tahap 1](docs/superpowers/specs/2026-11-01-stage-1-foundation-design.md)

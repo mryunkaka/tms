@@ -14,6 +14,7 @@
 | Pino ke stdout | Logging JSON efisien, mudah diambil systemd/journald. | Menulis log aplikasi sendiri ke disk memperbesar risiko disk penuh dan secret tertinggal. |
 | Midtrans sandbox lalu produksi | Payment lokal sesuai kebutuhan VA/QRIS dan status transaksi. | Payment gateway lain tidak diminta; integrasi langsung bank tidak praktis untuk MVP. |
 | Node.js v24; Ubuntu 24.04, Nginx + systemd | Versi dan target server mengikuti kebutuhan proyek; service sedikit dan mudah dioperasikan. | Kubernetes/container orchestration terlalu berat untuk satu VPS awal dan disk terbatas. |
+| Workstation Windows memakai PostgreSQL native, NSSM `nodejs`, dan Nginx `WebStack-Nginx` yang sudah ada | Service Node/API auto-start setelah PostgreSQL; reuse Nginx menghindari listener ganda dan mempertahankan PHP vhost. TMS hanya bind ke loopback pada port 8085. | Service Nginx kedua akan berebut port; Docker/Redis tidak dibutuhkan untuk tahap lokal ini. |
 | Redis + BullMQ mulai Tahap 2 | Tahap 1 cukup memakai Nest scheduler dan DB; queue dipakai saat retry/worker memang diperlukan. | Memasang Redis sejak awal menambah service/dependensi lokal tanpa manfaat MVP inti. |
 | Uptime Kuma awal; Prometheus/Grafana Tahap 3 | Monitoring ringan mendahului observability yang lebih lengkap. | Stack monitoring penuh pada server kecil berisiko menambah beban/disk terlalu cepat. |
 
@@ -25,7 +26,7 @@ Alternatif satu kolom kota pada `Trip` ditolak karena membatasi satu tujuan/stru
 
 ## PostgreSQL lokal dan Redis
 
-**Keputusan:** pada laptop Windows gunakan installer resmi PostgreSQL, bukan Docker Compose. Pemeriksaan 2026-11-01 tidak menemukan `docker`, `psql`, `postgres`, `node`, atau `npm` pada PATH. Installer PostgreSQL paling sederhana untuk database tunggal Tahap 1 dan menghindari ketergantungan Docker; jalankan database lokal/loopback dan jangan ubah service laptop secara otomatis. PostgreSQL belum dipasang oleh pekerjaan ini. Redis ditunda sampai Tahap 2; pilihan runtime lokal (Docker/WSL/distribusi kompatibel) diputuskan saat kebutuhan queue nyata dan lingkungan diperiksa.
+**Keputusan:** pada laptop Windows gunakan installer resmi PostgreSQL, bukan Docker Compose. Pemeriksaan awal 2026-11-01 tidak menemukan `docker`, `psql`, `postgres`, `node`, atau `npm` pada PATH. Setelah pemilik meminta setup service lokal, PostgreSQL 18.6 dipasang di `C:\Server` dengan listener loopback dan Node/Nginx diatur auto-start; bukti operasional ada di `DEPLOY_RUNBOOK.md`. Redis ditunda sampai Tahap 2; pilihan runtime lokal (Docker/WSL/distribusi kompatibel) diputuskan saat kebutuhan queue nyata dan lingkungan diperiksa.
 
 ## Email transaksi
 

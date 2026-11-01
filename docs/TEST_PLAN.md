@@ -76,5 +76,6 @@ Seluruh test bisnis mengacu pada `BUSINESS_FLOW.md` dan state machine PRD. Test 
 - Workspace: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`.
 - API unit/e2e mencakup kontrak health, role admin, penolakan anonim dan role bukan admin, hash token refresh, reuse refresh, dan penolakan role non-admin saat login.
 - `npm run db:validate` dan `npm run db:generate` tidak memerlukan server DB.
-- Setelah PostgreSQL dipasang: jalankan `npm run db:migrate`, seed dua kali dan pastikan password tidak berubah; tambahkan tes persistence untuk login/refresh paralel, reuse, logout, migrasi, serta `npm run db:backup:test`.
+- Verifikasi Windows lokal (2026-11-01): PostgreSQL 18.6 aktif di loopback; migration deploy dan seed dijalankan dua kali; login admin terhadap database berhasil. `npm run db:backup:test` menghasilkan custom-format dump dan lulus `pg_restore --list`; ini hanya memeriksa arsip, bukan memulihkan database.
+- Masih diperlukan sebelum fondasi DB dinyatakan selesai: restore dump ke database terisolasi lalu validasi tabel/count; tes persistence untuk login/refresh paralel, reuse, logout, serta migration.
 - Tes HTTP memock throttler agar test dapat berjalan tanpa dependensi layanan eksternal; batas rate login harus diverifikasi dengan guard nyata sebelum rilis. Automated test juga belum menggantikan tes integrasi PostgreSQL atau pengujian manual cookie Secure/CORS lintas origin di browser.

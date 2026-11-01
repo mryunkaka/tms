@@ -82,7 +82,9 @@ Jalankan pada tiap rilis dan setelah perubahan auth, booking, payment atau infra
 6. Jalankan restore drill terjadwal sebelum go-live dan catat durasi/data point-in-time yang tercapai.
 7. Catat temuan severity, reproduksi/bukti, mitigasi, owner dan target; rilis tidak boleh mengabaikan P0/P1 tanpa persetujuan/mitigasi owner yang terdokumentasi.
 
-Rilis saat ini Tahap 0: belum ada aplikasi/dependency, sehingga pemeriksaan eksekusi aplikasi belum tersedia; periksa dokumen, ignore rules, dan isi repo manual.
+Status implementasi lokal per 2026-11-01: Tahap 1 aktif. PostgreSQL 18.6 memakai SCRAM dan hanya listen pada loopback; API dan web bind ke loopback di belakang service Nginx lokal. `.env` diabaikan Git dan ACL dibatasi ke pemilik, Administrators, dan SYSTEM. NSSM `nodejs` saat ini berjalan sebagai `LocalSystem`, sehingga setup ini tetap local-only; jangan expose ke LAN/internet. Buat service account berhak minimum sebelum mengubah batas akses.
+
+Migration, seed, build, test, lint, health endpoint, dan login admin telah diverifikasi pada mesin lokal. Pemeriksaan dump `pg_restore --list` lulus, tetapi restore drill ke database terisolasi masih tertunda. Ini bukan audit go-live; ikuti seluruh checklist di atas sebelum deployment VPS.
 # Implementasi awal auth admin
 
 - Password admin di-hash dengan Argon2id. Tidak ada registrasi publik atau kredensial bawaan.
@@ -90,6 +92,6 @@ Rilis saat ini Tahap 0: belum ada aplikasi/dependency, sehingga pemeriksaan ekse
 - Refresh token 256-bit hanya ada di cookie HttpOnly, `SameSite=Lax`, path `/api/v1/auth`, Secure di produksi. Database menyimpan SHA-256 hash; token berotasi saat refresh dan reuse token revoked mencabut seluruh family.
 - Login dibatasi 5 percobaan per menit per IP. Batas default API 100 request/menit per IP; storage rate limit saat ini in-memory, sesuai satu proses lokal.
 - CORS hanya mengizinkan `WEB_ORIGIN` dengan credentials. Mutasi auth juga mensyaratkan Origin sama persis. DTO menolak field yang tidak dikenal.
-- PostgreSQL belum tersedia pada lingkungan implementasi ini; migration/schema divalidasi, tetapi persistence/race harus diuji pada DB lokal sebelum digunakan.
+- PostgreSQL lokal kini tersedia; migration, seed, dan login admin melalui database telah diverifikasi. Persistence refresh paralel/reuse/logout dan race booking tetap belum diuji karena fitur booking belum diimplementasikan.
 
 API mempercayai satu reverse proxy untuk `X-Forwarded-For` agar pembatasan login mengambil IP klien dari Nginx. Jangan expose port API langsung ke internet saat deployment.

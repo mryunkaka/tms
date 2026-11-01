@@ -11,17 +11,20 @@ Build a Bahasa Indonesia travel booking system for one operator that offers oper
 - `packages/shared`: shared types and validation only where both apps need them.
 - Redis and BullMQ are deferred to Stage 2. Logging uses Pino to stdout. Midtrans starts in sandbox.
 - See `docs/ARCHITECTURE.md` for module boundaries, ports, local setup, and deployment.
-- Current stage: Stage 0 documentation and working agreements. Do not create application code until Stage 1 is explicitly started.
+- Current stage: Stage 1 is active. Monorepo, PostgreSQL/Prisma foundation, and admin authentication are implemented; catalog, trips, schedules, booking, and capacity work remain. Do not start Stage 2 payments/queues before Stage 1 scope is complete and explicitly approved.
 
 ## Commands
 
-The application and workspace scripts do not exist yet. All commands below are **not available yet** and must be added with Stage 1:
+The npm workspace scripts are available after dependencies are installed:
 
-- Install: not available yet (`npm install` once a workspace manifest exists).
-- Development: not available yet (`npm run dev`).
-- Tests: not available yet (`npm test`).
-- Lint: not available yet (`npm run lint`).
-- Build: not available yet (`npm run build`).
+- Install: `npm ci`.
+- Development: `npm run dev`.
+- Tests: `npm test`.
+- Lint: `npm run lint`.
+- Typecheck: `npm run typecheck`.
+- Build: `npm run build`.
+- Production start: `npm run start` after a build and valid production `.env`.
+- Database: `npm run db:validate`, `npm run db:generate`, `npm run db:migrate`, `npm run db:deploy`, `npm run db:seed`, `npm run db:backup:test`.
 
 Do not invent successful command results. Add real cross-platform npm scripts when the monorepo is created.
 

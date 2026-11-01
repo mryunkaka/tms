@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Halaman `http://127.0.0.1:8085/` dan API health sudah merespons HTTP 200. Lakukan backup/restore drill sebelum rilis.
+- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Homepage, API health, login admin, dan dump `pg_restore --list` telah diverifikasi. Restore drill ke database terisolasi masih perlu dilakukan.
 
 ## Belum Dikerjakan (To Do)
 
@@ -46,7 +46,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sudah Dilaksanakan (Done)
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat npm workspaces untuk web/API/shared, konfigurasi TypeScript/lint/test/build, validasi env dan instruksi lokal. Unit/API/web test serta lint/typecheck/build berhasil.
-- **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat login admin Argon2id, JWT access singkat, refresh opaque hash-only dengan rotasi/reuse family revoke, logout, cookie HttpOnly, rate-limit login, CORS/Origin, DTO validation, Helmet, guard dan RBAC. Tes mencakup login cookie, role, refresh dan seed. Tes persistence/race menunggu PostgreSQL.
+- **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat login admin Argon2id, JWT access singkat, refresh opaque hash-only dengan rotasi/reuse family revoke, logout, cookie HttpOnly, rate-limit login, CORS/Origin, DTO validation, Helmet, guard dan RBAC. Unit tes mencakup login cookie, role, refresh dan seed; login database lokal berhasil. Tes integrasi persistence/refresh paralel/reuse/logout masih diperlukan.
 
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
 - **TMS-002 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat `AGENTS.md` serta panduan commit/prioritas keamanan dan DoD. Commit `d2e921c`.
@@ -64,8 +64,8 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Memilih guest booking sebagai asumsi MVP demi mengurangi hambatan; perlu validasi owner terhadap mekanisme lookup privacy-safe.
 - **2026-11-01:** Memasang skill pihak ketiga hanya melalui salinan folder skill; plugin, lifecycle hook, adapter lain dan skrip instalasi tidak ikut scope.
 - **2026-11-01:** Atas permintaan pemilik, memperluas cakupan produk agar operator satu bisnis dapat menyediakan trip di banyak daerah; Kotabaru menjadi daerah awal. Daerah disimpan sebagai hierarki konfigurasi dan trip dapat terkait ke beberapa destinasi.
-- **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. PostgreSQL belum dipasang sehingga integrasi DB dan restore drill tetap tertunda.
-- **2026-11-01:** Memasang PostgreSQL 18.6 lokal, membatasi listener ke loopback, membuat database dan user aplikasi, menerapkan migration/seed, dan membangun production app. NSSM `nodejs` bergantung pada PostgreSQL dan auto-start; virtual host TMS ditambahkan ke Nginx existing `WebStack-Nginx`. Homepage dan health endpoint diverifikasi HTTP 200.
+- **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. Saat branch dimulai PostgreSQL belum dipasang sehingga integrasi DB dan restore drill masih tertunda.
+- **2026-11-01:** Memasang PostgreSQL 18.6 lokal, membatasi listener ke loopback, membuat database dan user aplikasi, menerapkan migration/seed, dan membangun production app. NSSM `nodejs` bergantung pada PostgreSQL dan auto-start; virtual host TMS ditambahkan ke Nginx existing `WebStack-Nginx`. Homepage, health, login admin dan PHP vhost diverifikasi; backup archive list lulus, restore drill belum dilakukan.
 
 ## Terblokir (Blocked)
 
