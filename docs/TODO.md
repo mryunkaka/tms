@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-032 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Salin hanya skill Ponytail dan commit terpisah setelah audit sumber selesai.
+- Tidak ada item yang sedang dikerjakan.
 
 ## Belum Dikerjakan (To Do)
 
@@ -51,6 +51,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **TMS-004 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Dokumentasikan arsitektur, security checklist, deployment, keputusan, template report. Commit `516357c`.
 - **TMS-029 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat strategi test, debugging protocol dan log tabel kosong.
 - **TMS-005 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Audit sumber dan pasang hanya skill Karpathy pada `.agents/skills/`; gabungkan prinsipnya ke `AGENTS.md` dan catat keputusan. Commit pemasangan terpisah.
+- **TMS-032 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Audit sumber dan salin hanya `skills/ponytail/SKILL.md` ke `.agents/skills/ponytail/`; tidak memasang plugin/hook/adapter. Commit `chore: add ponytail skill` terpisah.
 
 ## Perubahan (Change Log)
 
