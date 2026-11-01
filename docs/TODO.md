@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** Audit full masih melaporkan 31 advisory low/moderate pada dependency development/test (npm 11.20.0); `npm audit --omit=dev` bersih (0). `npm update --package-lock-only` tanpa perubahan efektif. Temuan mencakup dependency berjenjang Jest/ESLint/Nest CLI; audit fix hanya mengusulkan downgrade major, tidak diterapkan. Lanjutkan review advisory dan upgrade teruji; jangan `--force`.
+- **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** Audit penuh masih melaporkan 31 advisory low/moderate; `npm audit --omit=dev` bersih (0). Verifikasi registry saat ini menunjukkan Jest 30.5.2 dan Nest CLI 12.0.11 masih membawa `glob@13.0.6`/`minimatch@10.2.6`; advisori resmi menetapkan perbaikan `glob@14.0.2` dan `minimatch@11.0.1`, sementara advisori `deepmerge@4.3.1` belum menetapkan versi perbaikan. npm audit mengusulkan downgrade major untuk toolchain, bukan jalur upgrade kompatibel. Tidak memaksa override lintas major atau downgrade. Tinjau lagi saat upstream memperbarui dependency dan jalankan suite penuh.
 
 ## Belum Dikerjakan (To Do)
 
