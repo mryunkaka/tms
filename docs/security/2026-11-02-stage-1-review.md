@@ -2,7 +2,7 @@
 
 ## Ringkasan
 
-- Commit/tag: checkpoint sebelumnya `6f7e5c2`; audit ini memeriksa perubahan lokal sebelum commit final.
+- Commit yang diaudit: `8d7ff23` (perubahan yang sama diperiksa pada working tree tepat sebelum commit).
 - Scope: auth/admin, katalog, booking guest, capacity/expiry, public web, local PostgreSQL/Nginx/NSSM, dependency dan dokumentasi.
 - Pemeriksa/tanggal: Codex, 2026-11-02 (WITA).
 - Runtime/tool: Node 24.22.1, npm 11, PostgreSQL 18.6, Next.js 16.4.3, NestJS 12.3.2, Prisma 7.10.1.

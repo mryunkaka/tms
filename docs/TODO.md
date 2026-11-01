@@ -69,6 +69,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Menyelesaikan alur booking guest, expiry dan verifikasi lookup; menambah detail publik, halaman destinasi, status lookup, SEO, serta panel admin dasar. Uji PostgreSQL nyata memastikan race satu kursi menghasilkan satu booking dan expiry melepas hold tepat satu kali. Build production dan checks lulus; `/`, `/admin`, `/booking/status`, dan health API menghasilkan HTTP 200 setelah service `nodejs` direstart.
 - **2026-11-02:** Panel admin dilengkapi form sunting destinasi, trip/itinerary/relasi, serta jadwal. Publish menolak itinerary yang tidak memiliki judul untuk setiap hari durasi trip; unit test menutup aturan ini. API juga memakai Pino JSON stdout, ID unik per request dan serializer akses yang tidak mencatat header/query/body.
 - **2026-11-02:** Security review mencatat restore drill P0 yang belum dilakukan dan 31 advisory low/moderate pada tooling development (production-only audit 0). `.env` tetap ignored; pemeriksaan pola secret berkeyakinan tinggi pada file Git tidak menemukan kandidat.
+- **2026-11-02:** Commit `8d7ff23 feat(stage-1): complete catalogue and booking flows` sudah dipush ke `origin/main`. Tahap 1 tetap blocked oleh restore drill P0.
 
 ## Terblokir (Blocked)
 

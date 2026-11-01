@@ -61,7 +61,7 @@
 - [x] Run available lint, test, typecheck, build, Prisma validation/deploy and PostgreSQL integration checks.
 - [ ] Complete backup restore drill only through an approved isolated-database method; retain blocked status if the security gate rejects required access changes.
 - [x] Review whole-repository security and quality; save report under `docs/security/` and update `docs/TODO.md`.
-- [ ] Inspect staged diff, commit atomic changes and push to `main` as previously authorized.
+- [x] Inspect staged diff, commit atomic changes and push to `main` as previously authorized.
 
 ## Execution Ledger
 
@@ -71,3 +71,4 @@
 - **2026-11-01:** Full workspace lint, tests (23 total), typecheck and build passed. Local API feature tests use mocked Prisma; PostgreSQL was verified for migration deployment, not yet for booking concurrency or expiry behavior.
 - **2026-11-01:** Re-ran full workspace lint, tests (26 total), typecheck and build after trip draft/list API work; all passed. Added archive checks across destination descendants and excluded orphaned children from public listings. Booking pricing helper is tested; booking transaction is not implemented yet.
 - **2026-11-02:** Implemented booking lifecycle, PostgreSQL locking/expiry checks, catalog and schedule management, public/admin web flows, Pino JSON logging/redaction, and production-route verification. Final lint, 43 tests, typecheck, build, Prisma validation/deploy, PostgreSQL booking race/expiry, and local HTTP route checks passed. Security report identifies restore drill as blocked P0 and full dev audit as 31 low/moderate findings.
+- **2026-11-02:** Manual Ponytail commit review completed; commit `8d7ff23` was pushed to `origin/main` under the owner's earlier authorization. Stage remains open only for the uncompleted restore drill and tracked pre-release checks.
