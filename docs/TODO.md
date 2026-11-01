@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- Tidak ada item yang sedang dikerjakan.
+- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Schema, migrasi dan seed aman tersedia; validasi/generasi berhasil. Menjalankan migrasi, menguji persistensi/seed pada PostgreSQL lokal dan drill restore backup menunggu PostgreSQL tersedia.
 
 ## Belum Dikerjakan (To Do)
 
@@ -45,6 +45,9 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sudah Dilaksanakan (Done)
 
+- **TMS-012 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat npm workspaces untuk web/API/shared, konfigurasi TypeScript/lint/test/build, validasi env dan instruksi lokal. Unit/API/web test serta lint/typecheck/build berhasil.
+- **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat login admin Argon2id, JWT access singkat, refresh opaque hash-only dengan rotasi/reuse family revoke, logout, cookie HttpOnly, rate-limit login, CORS/Origin, DTO validation, Helmet, guard dan RBAC. Tes mencakup login cookie, role, refresh dan seed. Tes persistence/race menunggu PostgreSQL.
+
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
 - **TMS-002 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat `AGENTS.md` serta panduan commit/prioritas keamanan dan DoD. Commit `d2e921c`.
 - **TMS-003 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Dokumentasikan alur bisnis kanonis, PRD/state machine, design brief. Commit `8f287c4`.
@@ -61,6 +64,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Memilih guest booking sebagai asumsi MVP demi mengurangi hambatan; perlu validasi owner terhadap mekanisme lookup privacy-safe.
 - **2026-11-01:** Memasang skill pihak ketiga hanya melalui salinan folder skill; plugin, lifecycle hook, adapter lain dan skrip instalasi tidak ikut scope.
 - **2026-11-01:** Atas permintaan pemilik, memperluas cakupan produk agar operator satu bisnis dapat menyediakan trip di banyak daerah; Kotabaru menjadi daerah awal. Daerah disimpan sebagai hierarki konfigurasi dan trip dapat terkait ke beberapa destinasi.
+- **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. PostgreSQL belum dipasang sehingga integrasi DB dan restore drill tetap tertunda.
 
 ## Terblokir (Blocked)
 

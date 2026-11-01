@@ -101,3 +101,10 @@ Gunakan `pg_dump` custom-format harian dengan retensi yang dikonfigurasi, terenk
 ## Logging dan observability
 
 Pino mengirim JSON ke stdout; systemd/journald mengelola log lokal dengan batas/retensi. Correlation/request ID pada API; redaksi authorization, cookie, token, webhook secret, email/telepon dan payment data. Health endpoint memisahkan liveness dan readiness DB. Uptime Kuma untuk tahap awal; Prometheus + Grafana tahap 3. Alert untuk API/DB down, disk hampir penuh, backup gagal, webhook/reconciliation anomaly, dan antrean tertahan.
+# Implementasi fondasi (Tahap 1)
+
+Monorepo memakai npm workspaces: `apps/web` (Next.js), `apps/api` (NestJS) dan `packages/shared` (kontrak role). API menggunakan Prisma 7 dengan adapter PostgreSQL (`pg`). Schema awal memuat `User`, `Role`, `UserRole` dan `RefreshToken`; migrasi berada di `apps/api/prisma/migrations`.
+
+API membaca environment melalui skema Zod saat boot. Admin awal diprovisikan dengan `INITIAL_ADMIN_EMAIL` dan `INITIAL_ADMIN_PASSWORD`; seed Argon2id hanya membuat user baru, tidak mereset password, dan tidak menaikkan role akun non-admin yang sudah ada. Jangan menyimpan `.env` ke Git.
+
+Autentikasi tersedia pada `/api/v1/auth/login`, `/refresh`, `/logout` dan `/me`. Refresh token adalah nilai opaque yang hanya diberikan dalam cookie HttpOnly; database hanya menyimpan SHA-256 hash. Role authorization dilakukan pada API.

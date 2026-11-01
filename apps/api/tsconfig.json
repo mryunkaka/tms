@@ -1,0 +1,1 @@
+{"extends":"../../tsconfig.base.json","compilerOptions":{"module":"NodeNext","moduleResolution":"NodeNext","declaration":false,"removeComments":true,"sourceMap":true,"outDir":"./dist","rootDir":".","incremental":true,"emitDecoratorMetadata":true,"experimentalDecorators":true,"strictPropertyInitialization":false,"skipLibCheck":true},"include":["src/**/*.ts","test/**/*.ts"]}

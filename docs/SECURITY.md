@@ -83,3 +83,13 @@ Jalankan pada tiap rilis dan setelah perubahan auth, booking, payment atau infra
 7. Catat temuan severity, reproduksi/bukti, mitigasi, owner dan target; rilis tidak boleh mengabaikan P0/P1 tanpa persetujuan/mitigasi owner yang terdokumentasi.
 
 Rilis saat ini Tahap 0: belum ada aplikasi/dependency, sehingga pemeriksaan eksekusi aplikasi belum tersedia; periksa dokumen, ignore rules, dan isi repo manual.
+# Implementasi awal auth admin
+
+- Password admin di-hash dengan Argon2id. Tidak ada registrasi publik atau kredensial bawaan.
+- Access token JWT berumur default 15 menit; secret minimal 32 karakter (64 di produksi).
+- Refresh token 256-bit hanya ada di cookie HttpOnly, `SameSite=Lax`, path `/api/v1/auth`, Secure di produksi. Database menyimpan SHA-256 hash; token berotasi saat refresh dan reuse token revoked mencabut seluruh family.
+- Login dibatasi 5 percobaan per menit per IP. Batas default API 100 request/menit per IP; storage rate limit saat ini in-memory, sesuai satu proses lokal.
+- CORS hanya mengizinkan `WEB_ORIGIN` dengan credentials. Mutasi auth juga mensyaratkan Origin sama persis. DTO menolak field yang tidak dikenal.
+- PostgreSQL belum tersedia pada lingkungan implementasi ini; migration/schema divalidasi, tetapi persistence/race harus diuji pada DB lokal sebelum digunakan.
+
+API mempercayai satu reverse proxy untuk `X-Forwarded-For` agar pembatasan login mengambil IP klien dari Nginx. Jangan expose port API langsung ke internet saat deployment.
