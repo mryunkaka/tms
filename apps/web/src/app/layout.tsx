@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return <html lang="id"><body>
     <ServiceWorkerRegistration />
-    <header className="site-header"><Link className="brand" href="/" aria-label="TMS, beranda"><span className="brand-mark" aria-hidden="true">T</span><span>jalan<span className="brand-accent">kita</span></span></Link><nav aria-label="Navigasi utama"><Link href="/#trips-heading">Cari perjalanan</Link><Link href="/booking/status">Cek booking</Link><Link href="/admin">Admin</Link></nav></header>
+    <header className="site-header"><Link className="brand" href="/" aria-label="TMS, beranda"><span className="brand-mark" aria-hidden="true">T</span><span>jalan<span className="brand-accent">kita</span></span></Link><nav aria-label="Navigasi utama"><Link href="/#trips-heading">Cari perjalanan</Link><Link href="/panduan">Panduan</Link><Link href="/booking/status">Cek booking</Link><Link href="/admin">Admin</Link></nav></header>
     {children}
     <footer className="site-footer"><span>© TMS · Perjalanan dari berbagai daerah</span><span>Informasi trip mengikuti data dari operator.</span></footer>
   </body></html>;
