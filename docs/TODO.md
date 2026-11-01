@@ -5,6 +5,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sedang Dikerjakan (On Progress)
 
 - **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Homepage, API health, login admin, dan dump `pg_restore --list` telah diverifikasi. Restore drill ke database terisolasi masih perlu dilakukan.
+- **TMS-014 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Implementasi auth sudah ada dan diverifikasi langsung terhadap API/database lokal: login admin, cookie refresh, rotasi token, logout menolak refresh berikutnya, serta reuse token lama mencabut token baru dalam satu family. Tes integrasi otomatis, refresh paralel, throttle nyata dan cookie Secure/CORS di browser tetap perlu.
 
 ## Belum Dikerjakan (To Do)
 
@@ -46,7 +47,6 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sudah Dilaksanakan (Done)
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat npm workspaces untuk web/API/shared, konfigurasi TypeScript/lint/test/build, validasi env dan instruksi lokal. Unit/API/web test serta lint/typecheck/build berhasil.
-- **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat login admin Argon2id, JWT access singkat, refresh opaque hash-only dengan rotasi/reuse family revoke, logout, cookie HttpOnly, rate-limit login, CORS/Origin, DTO validation, Helmet, guard dan RBAC. Unit tes mencakup login cookie, role, refresh dan seed; login database lokal berhasil. Tes integrasi persistence/refresh paralel/reuse/logout masih diperlukan.
 
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
 - **TMS-002 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat `AGENTS.md` serta panduan commit/prioritas keamanan dan DoD. Commit `d2e921c`.
