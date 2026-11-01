@@ -78,4 +78,16 @@ describe('offline service worker', () => {
     expect(respondWith).not.toHaveBeenCalled();
     expect(worker.fetch).not.toHaveBeenCalled();
   });
+
+  it('does not intercept same-origin API navigations', () => {
+    const worker = loadWorker();
+    const respondWith = jest.fn();
+    worker.listeners.get('fetch')?.({
+      request: { method: 'GET', mode: 'navigate', url: 'https://tms.example.test/api/v1/destinations' },
+      respondWith,
+    });
+
+    expect(respondWith).not.toHaveBeenCalled();
+    expect(worker.fetch).not.toHaveBeenCalled();
+  });
 });

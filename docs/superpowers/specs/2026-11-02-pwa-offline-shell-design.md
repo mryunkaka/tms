@@ -16,7 +16,7 @@ Pilihan 1 memenuhi kebutuhan shell sambil menjaga keputusan booking tetap membut
 
 - Daftarkan service worker hanya pada production build.
 - Cache berisi satu-satunya `/offline.html`; saat navigasi gagal, termasuk `/admin`, tampilkan shell offline generik.
-- Request API/non-navigasi dan seluruh metode selain GET tidak dicegat atau disimpan.
+- Request API (termasuk navigasi dokumen ke `/api`), non-navigasi, dan seluruh metode selain GET tidak dicegat atau disimpan.
 - Halaman fallback berdiri sendiri tanpa font, gambar, stylesheet, atau script jaringan.
 - Tes menjalankan worker asli dalam VM dengan Cache API/fetch palsu dan memverifikasi install, offline fallback, serta bypass POST API.
 

@@ -20,7 +20,7 @@
 
 - Old cache versions are removed without deleting unrelated origin caches.
 - Offline navigation returns the shell even when the requested route is `/admin`.
-- API POSTs and non-navigation requests are not intercepted.
+- API requests (including document navigations) and non-navigation requests are not intercepted.
 - Production registration failure does not break the page.
 
 ---
