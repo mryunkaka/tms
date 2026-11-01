@@ -68,6 +68,7 @@ RBAC ditegakkan di API, bukan hanya menyembunyikan tombol di web. Admin memiliki
 
 - Customer memilih jadwal, jumlah peserta, data wajib tiap peserta, dan kontak; sebelum menyimpan server memvalidasi jadwal, harga dan sisa kuota.
 - Transaksi database dengan row lock/strategi serialisasi atomik memastikan dua permintaan untuk kursi terakhir tidak dapat sama-sama berhasil; kuota tidak negatif.
+- Kursi pada `PENDING_DP` dihitung sebagai hold terhadap ketersediaan segera setelah transaksi dibuat; saat payment terverifikasi hold dikonversi menjadi kursi terjual tanpa decrement kedua. Saat expiry/cancel yang sah, pelepasan dilakukan tepat sekali.
 - Booking awal menahan tempat selama 2 jam. Untuk jadwal kurang dari 7 hari sebelum berangkat, pembayaran penuh wajib; untuk jadwal lainnya DP 30%.
 - Saat DP belum dibayar hingga batas, scheduler NestJS menandai `EXPIRED` dan mengembalikan hold dengan operasi idempoten.
 - Customer dapat mengecek status menggunakan kode booking dan bukti kontak. **TBD:** tingkat detail data yang ditampilkan pada lookup publik.
