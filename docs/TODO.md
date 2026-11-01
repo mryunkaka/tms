@@ -4,7 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Schema, migrasi dan seed aman tersedia; validasi/generasi berhasil. Menjalankan migrasi, menguji persistensi/seed pada PostgreSQL lokal dan drill restore backup menunggu PostgreSQL tersedia.
+- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Halaman `http://127.0.0.1:8085/` dan API health sudah merespons HTTP 200. Lakukan backup/restore drill sebelum rilis.
 
 ## Belum Dikerjakan (To Do)
 
@@ -20,7 +20,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ### Tahap 1 — inti monorepo, auth, katalog, booking
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Siapkan monorepo npm workspace `apps/web`, `apps/api`, `packages/shared`, toolchain TypeScript/lint/test/build, validasi env, `.env.example` dan CI lokal lint/test.
-- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Konfigurasikan PostgreSQL lokal native, Prisma schema/migration, seed aman tanpa default credential, backup test data.
+- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Lakukan backup/restore drill pada database TMS dan dokumentasikan hasilnya sebelum rilis.
 - **TMS-014 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Buat auth admin, password hash, JWT access, refresh hash/rotation/revocation cookie, rate limit, guards/RBAC dan audit; test session serta unauthorized access.
 - **TMS-015 — [P1] [Tahap 1] [Owner: Engineering + pemilik konten] [Tanggal: TBD]** Bangun UI publik SSR/SSG, katalog/filter/detail, SEO metadata/sitemap/robots/JSON-LD/OG dan responsive accessibility.
 - **TMS-016 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** CRUD destinasi/trip/jadwal admin, status publish, snapshot harga dan audit log.
@@ -65,6 +65,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Memasang skill pihak ketiga hanya melalui salinan folder skill; plugin, lifecycle hook, adapter lain dan skrip instalasi tidak ikut scope.
 - **2026-11-01:** Atas permintaan pemilik, memperluas cakupan produk agar operator satu bisnis dapat menyediakan trip di banyak daerah; Kotabaru menjadi daerah awal. Daerah disimpan sebagai hierarki konfigurasi dan trip dapat terkait ke beberapa destinasi.
 - **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. PostgreSQL belum dipasang sehingga integrasi DB dan restore drill tetap tertunda.
+- **2026-11-01:** Memasang PostgreSQL 18.6 lokal, membatasi listener ke loopback, membuat database dan user aplikasi, menerapkan migration/seed, dan membangun production app. NSSM `nodejs` bergantung pada PostgreSQL dan auto-start; virtual host TMS ditambahkan ke Nginx existing `WebStack-Nginx`. Homepage dan health endpoint diverifikasi HTTP 200.
 
 ## Terblokir (Blocked)
 

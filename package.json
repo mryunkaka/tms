@@ -8,6 +8,7 @@
   ],
   "scripts": {
     "dev": "npm run db:generate && concurrently -k -n API,WEB \"npm run dev --workspace @tms/api\" \"npm run dev --workspace @tms/web\"",
+    "start": "cross-env NODE_ENV=production concurrently -k -n API,WEB \"npm run start --workspace @tms/api\" \"npm run start --workspace @tms/web\"",
     "build": "npm run db:generate && npm run build --workspace @tms/shared && npm run build --workspace @tms/api && npm run build --workspace @tms/web",
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run db:generate && npm run test --workspaces --if-present",
@@ -15,6 +16,7 @@
     "db:generate": "npm run db:generate --workspace @tms/api",
     "db:validate": "npm run db:validate --workspace @tms/api",
     "db:migrate": "npm run db:migrate --workspace @tms/api",
+    "db:deploy": "npm run db:deploy --workspace @tms/api",
     "db:seed": "npm run db:seed --workspace @tms/api",
     "db:backup:test": "npm run db:backup:test --workspace @tms/api"
   },
