@@ -20,15 +20,17 @@ describe('buildDestinationTree', () => {
     expect(result).toEqual([]);
   });
 
-  it('sorts siblings by operator order and uses the name for ties', () => {
+  it('sorts siblings by operator order, name, and a stable slug/id tie-break', () => {
     const result = buildDestinationTree([
       { id: 'second', parentId: null, slug: 'second', name: 'Bali', sortOrder: 20 },
       { id: 'tie-z', parentId: null, slug: 'tie-z', name: 'Zamrud', sortOrder: 10 },
       { id: 'first', parentId: null, slug: 'first', name: 'Kotabaru', sortOrder: 0 },
       { id: 'tie-a', parentId: null, slug: 'tie-a', name: 'Anyer', sortOrder: 10 },
+      { id: 'same-name-z', parentId: null, slug: 'z-bandung', name: 'Bandung', sortOrder: 10 },
+      { id: 'same-name-a', parentId: null, slug: 'a-bandung', name: 'Bandung', sortOrder: 10 },
     ] as Parameters<typeof buildDestinationTree>[0]);
 
-    expect(result.map(({ id }) => id)).toEqual(['first', 'tie-a', 'tie-z', 'second']);
+    expect(result.map(({ id }) => id)).toEqual(['first', 'tie-a', 'same-name-a', 'same-name-z', 'tie-z', 'second']);
   });
 });
 
@@ -50,6 +52,14 @@ describe('DestinationsService admin operations', () => {
   let service: DestinationsService;
 
   beforeEach(() => { jest.clearAllMocks(); service = new DestinationsService(prisma as never); });
+
+  it('sorts the admin destination list with stable slug and ID tie-breaks', async () => {
+    await service.listAdmin();
+    expect(tx.destination.findMany).toHaveBeenCalledWith({
+      include: { parent: true },
+      orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }, { slug: 'asc' }, { id: 'asc' }],
+    });
+  });
 
   it('persists the requested order when creating a destination', async () => {
     await service.create({ slug: 'bali', name: 'Bali', sortOrder: 5 }, 'admin-1');

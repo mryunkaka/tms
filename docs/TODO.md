@@ -45,7 +45,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **TMS-015 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Homepage SSR dengan filter, halaman daerah/trip, status booking, metadata, sitemap/robots/JSON-LD dan layout mobile dibuat. Konten bisnis tetap menunggu pemilik.
 - **TMS-017 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Booking guest, snapshot harga, lock kuota PostgreSQL, scheduler expiry, idempotent release dan acceptance race/expiry sudah diuji dengan PostgreSQL lokal.
 - **TMS-018 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Lookup dan pembatalan menerima kode serta email/telepon melalui POST body; hasil lookup meminimalkan PII dan endpoint dibatasi rate limit.
-- **TMS-016 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** CRUD destinasi/trip/jadwal, hierarki dan banyak destinasi, audit, syarat publish, API publik filter/detail, serta panel admin buat/sunting/aktif/nonaktif/archive tersedia. Pengurutan destinasi kini diatur lewat `sortOrder` admin dan ditampilkan konsisten pada pohon publik.
+- **TMS-016 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** CRUD destinasi/trip/jadwal, hierarki dan banyak destinasi, audit, syarat publish, API publik filter/detail, serta panel admin buat/sunting/aktif/nonaktif/archive tersedia. Pengurutan destinasi memakai `sortOrder`, nama, slug, lalu ID untuk hasil konsisten.
 - **TMS-035 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** Shell offline PWA ditambahkan. Service worker production menyimpan hanya halaman fallback statis, memakai fallback itu untuk navigasi offline, dan melewati request API/non-navigasi; PWA-01 dicatat di rencana tes.
 
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
@@ -78,6 +78,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-02:** Review independen menemukan edit trip bisa menulis ulang urutan kunjungan saat urutan opsi katalog berubah; helper edit kini mempertahankan posisi tersimpan dan tes regresi lulus. Audit order destinasi juga mencatat nilai lama/baru.
 - **2026-11-02:** Implementasi pengurutan destinasi dan perbaikan review (`c60b8c9`, `b6e4e33`) sudah dipush ke `origin/main`.
 - **2026-11-02:** PWA-01: service worker production hanya mem-cache `/offline.html`; navigasi offline menampilkan shell berbahasa Indonesia. Tes worker menutup isi cache, fallback admin offline, penghapusan cache versi lama, dan bypass API POST maupun navigasi GET ke API. Review menemukan dan memperbaiki intersepsi navigasi API. Lint, test (63), typecheck, build, Prisma validate/deploy lulus; setelah build final dan restart, `/`, `/admin`, `/booking/status`, health, `/sw.js`, `/offline.html` HTTP 200; service `nodejs` Automatic aktif.
+- **2026-11-02:** Memperbaiki SEC-04: jika sibling destinasi memiliki sortOrder dan nama sama, pohon publik memakai slug/ID sebagai urutan stabil dan list admin mendapat tie-break yang sama. Tes regresi reproduksi urutan nondeterministik serta query admin.
 - **2026-11-02:** Commit `8d7ff23 feat(stage-1): complete catalogue and booking flows` sudah dipush ke `origin/main`. Tahap 1 tetap blocked oleh restore drill P0.
 
 ## Terblokir (Blocked)

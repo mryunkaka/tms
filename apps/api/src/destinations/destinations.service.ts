@@ -16,7 +16,7 @@ export function buildDestinationTree(rows: DestinationRow[]): PublicDestination[
     else if (!row.parentId) roots.push(node);
   }
   const sort = (items: PublicDestination[]) => {
-    items.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'id'));
+    items.sort((a, b) => a.sortOrder - b.sortOrder || a.name.localeCompare(b.name, 'id') || (a.slug < b.slug ? -1 : a.slug > b.slug ? 1 : a.id.localeCompare(b.id)));
     items.forEach((item) => sort(item.children));
   };
   sort(roots);
@@ -28,7 +28,7 @@ export class DestinationsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async listAdmin() {
-    return this.prisma.destination.findMany({ include: { parent: true }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }] });
+    return this.prisma.destination.findMany({ include: { parent: true }, orderBy: [{ sortOrder: 'asc' }, { name: 'asc' }, { slug: 'asc' }, { id: 'asc' }] });
   }
 
   async create(input: CreateDestinationDto, actorId: string) {
