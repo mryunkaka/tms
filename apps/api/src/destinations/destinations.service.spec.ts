@@ -61,6 +61,18 @@ describe('DestinationsService admin operations', () => {
     expect(tx.destination.update).toHaveBeenCalledWith({ where: { id: 'destination-1' }, data: { sortOrder: 5 } });
   });
 
+  it('records the old and new order in the destination audit event', async () => {
+    tx.destination.findUnique.mockResolvedValueOnce({ id: 'destination-1', slug: 'kotabaru', name: 'Kotabaru', description: null, parentId: null, isActive: true, sortOrder: 2 });
+    tx.destination.update.mockResolvedValueOnce({ id: 'destination-1', slug: 'kotabaru', name: 'Kotabaru', description: null, parentId: null, isActive: true, sortOrder: 5 });
+
+    await service.update('destination-1', { sortOrder: 5 }, 'admin-1');
+
+    expect(tx.auditLog.create).toHaveBeenCalledWith({ data: expect.objectContaining({
+      beforeData: expect.objectContaining({ sortOrder: 2 }),
+      afterData: expect.objectContaining({ sortOrder: 5 }),
+    }) });
+  });
+
   it('creates destinations inactive until explicitly published', async () => {
     const result = await service.create({ slug: 'kotabaru', name: 'Kotabaru', parentId: undefined }, 'admin-1');
     expect(result).toEqual({ id: 'destination-new', slug: 'kotabaru', name: 'Kotabaru', parentId: undefined, isActive: false });

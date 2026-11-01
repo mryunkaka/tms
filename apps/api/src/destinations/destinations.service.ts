@@ -38,7 +38,7 @@ export class DestinationsService {
           throw new NotFoundException('Destinasi induk tidak ditemukan.');
         }
         const created = await tx.destination.create({ data: { ...input, isActive: false } });
-        await tx.auditLog.create({ data: { actorId, action: 'CREATE', entityType: 'DESTINATION', entityId: created.id, afterData: { slug: created.slug, name: created.name, parentId: created.parentId, isActive: created.isActive } } });
+        await tx.auditLog.create({ data: { actorId, action: 'CREATE', entityType: 'DESTINATION', entityId: created.id, afterData: { slug: created.slug, name: created.name, parentId: created.parentId, isActive: created.isActive, sortOrder: created.sortOrder } } });
         return created;
       });
     } catch (error) {
@@ -50,7 +50,7 @@ export class DestinationsService {
   async update(id: string, input: UpdateDestinationDto, actorId: string) {
     try {
       return await this.prisma.$transaction(async (tx) => {
-        const current = await tx.destination.findUnique({ where: { id }, select: { id: true, slug: true, name: true, description: true, parentId: true, isActive: true } });
+        const current = await tx.destination.findUnique({ where: { id }, select: { id: true, slug: true, name: true, description: true, parentId: true, isActive: true, sortOrder: true } });
         if (!current) throw new NotFoundException('Destinasi tidak ditemukan.');
         if (input.parentId !== undefined && input.parentId !== null) {
           const rows = await tx.destination.findMany({ select: { id: true, parentId: true } });
@@ -65,7 +65,7 @@ export class DestinationsService {
           }
         }
         const updated = await tx.destination.update({ where: { id }, data: input });
-        await tx.auditLog.create({ data: { actorId, action: 'UPDATE', entityType: 'DESTINATION', entityId: id, beforeData: current, afterData: { slug: updated.slug, name: updated.name, description: updated.description, parentId: updated.parentId, isActive: updated.isActive } } });
+        await tx.auditLog.create({ data: { actorId, action: 'UPDATE', entityType: 'DESTINATION', entityId: id, beforeData: current, afterData: { slug: updated.slug, name: updated.name, description: updated.description, parentId: updated.parentId, isActive: updated.isActive, sortOrder: updated.sortOrder } } });
         return updated;
       });
     } catch (error) {

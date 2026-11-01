@@ -13,7 +13,7 @@
 | Pemeriksaan | Hasil | Perintah/versi | Bukti atau catatan |
 |---|---|---|---|
 | Perubahan dan threat model | PASS | Review diff, PRD, SECURITY.md | Server mengunci kuota dalam transaksi; lookup menggunakan POST body; akses admin diberi guard role. Panel admin menyediakan alur sunting katalog dan jadwal. |
-| Unit/integration/e2e | PASS | `npm test` | 14 suite, 56 test lulus. HTTP test auth memakai throttler mock. |
+| Unit/integration/e2e | PASS | `npm test` | 14 suite, 58 test lulus. HTTP test auth memakai throttler mock. |
 | Lint/typecheck/build | PASS | `npm run lint`, `npm run typecheck`, `npm run build` | Semua workspace lulus. Production build menghasilkan route `/`, `/admin`, `/booking/status`, destination/trip detail, sitemap, robots dan manifest. |
 | Prisma schema/migration | PASS | `npm run db:validate`, `npm run db:deploy` | Schema valid; tidak ada migration tertunda. `migrate dev` gagal membuat shadow DB karena role aplikasi tidak punya CREATEDB; gunakan `db:deploy` untuk menerapkan migration tersedia. |
 | PostgreSQL booking race/expiry | PASS | `npm run db:booking:test` | Dua request untuk kapasitas satu hanya membuat satu booking; expiry melepas hold sekali. |
@@ -25,7 +25,7 @@
 | Deployment/network/permissions | LOCAL ONLY | Inspect services dan HTTP lokal | PostgreSQL, Node/NSSM dan Nginx berjalan; API/database bind loopback, service Node/Nginx LocalSystem. Jangan expose di LAN/internet; belum ada TLS/domain atau service account berhak minimum. |
 | Backup/restore drill | BLOCKED P0 | Review catatan operasi lokal | Dump `pg_restore --list` sebelumnya lulus, namun itu bukan restore. `createdb` pada cluster aktif ditolak karena role `tms_app` tidak punya CREATEDB; percobaan `initdb` terisolasi gagal pada lingkungan Windows (`utf8_and_win` tidak ditemukan). Automatic approval sebelumnya juga menolak metode perubahan `pg_hba.conf`. Cluster aktif, konfigurasi, dan service tidak diubah oleh percobaan tersebut. |
 | Akses lokal | PASS | HTTP probe `127.0.0.1:8085` | `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` semuanya HTTP 200 setelah service NSSM `nodejs` direstart. CORS preflight 204 dan Origin asing 401. |
-| Urutan destinasi | PASS | DTO/service/UI tests; Prisma deploy | Integer order dibatasi 0..2.147.483.647; input null, pecahan, negatif dan overflow ditolak. Migration menambah kolom default 0; pohon mengurutkan sibling dan tie nama secara deterministik. |
+| Urutan destinasi | PASS | DTO/service/UI tests; Prisma deploy | Integer order dibatasi 0..2.147.483.647; input null, pecahan, negatif dan overflow ditolak. Migration menambah kolom default 0; pohon mengurutkan sibling menurut sortOrder dan nama. Edit trip mempertahankan posisi kunjungan lama; audit log memuat nilai sortOrder sebelum/sesudah. |
 
 ## Temuan
 
@@ -34,6 +34,7 @@
 | SEC-01 / P0 | Restore dump ke database terisolasi belum diverifikasi; recovery aktual belum terbukti. Role aplikasi tak berhak membuat DB baru, dan upaya cluster sementara gagal membuat cluster pada locale Windows. | Belum ada lingkungan restore yang didukung dan disetujui. Jangan ubah cluster aktif/akses DB untuk melewati hambatan; jangan menandai Tahap 1 selesai sampai uji restore aman menghasilkan bukti. | Engineering/ops | Sebelum menutup Tahap 1 |
 | SEC-02 / P1 | 31 advisory low/moderate pada rantai tooling development/test. Tidak ada vulnerability dalam audit dependency production-only. `npm audit fix --dry-run` tidak menemukan pembaruan kompatibel; rekomendasi otomatis memerlukan downgrade major. | Jadwalkan upgrade toolchain terencana dan ulangi audit; tanpa `--force`. | Engineering | Sebelum rilis publik |
 | SEC-03 / P1 | Browser belum memverifikasi penyimpanan/pengiriman cookie refresh Secure pada alamat lokal. | Uji autentikasi dengan browser pada origin/domain deployment sebelum rilis publik. | Engineering | Sebelum rilis publik |
+| SEC-04 / P2 | Destinasi sibling dengan sortOrder dan nama identik belum memiliki tie-break berdasarkan slug/ID. Tampilannya sama, tetapi urutan record tidak dijamin jika query mengembalikan baris dengan urutan berbeda. | Pilih slug/ID sebagai tie-break tambahan jika pemilik perlu urutan stabil untuk nama duplikat. | Engineering | Bila operator menggunakan nama duplikat |
 
 ## Risiko yang diterima dan belum diperiksa
 

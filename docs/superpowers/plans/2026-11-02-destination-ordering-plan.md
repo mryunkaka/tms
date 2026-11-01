@@ -19,7 +19,7 @@
 
 ## Review Focus
 
-- Equal order values remain deterministic via a locale-aware name tie-breaker.
+- Equal order values use a locale-aware name tie-breaker; identical sibling names may retain input row order (deferred P2).
 - Existing rows retain predictable order after migration (`sortOrder = 0`).
 - Invalid negative/non-integer updates are rejected at the API boundary.
 - Parent and child nodes each sort only among their siblings.
