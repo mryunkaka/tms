@@ -50,5 +50,5 @@
 **Files:** `docs/PRD.md` (implementation status only if needed), `docs/TEST_PLAN.md`, `docs/TODO.md`, and `docs/security/2026-11-02-stage-1-review.md`.
 
 - [x] Run full lint, test, typecheck, build, migration deploy, and relevant PostgreSQL checks.
-- [ ] Review diff using `docs/COMMIT_GUIDE.md`, commit atomically, then push to `main` under prior authorization.
+- [x] Review diff using `docs/COMMIT_GUIDE.md`, commit atomically, then push to `main` under prior authorization (`c60b8c9`, `b6e4e33`).
 - [x] Record the remaining PostgreSQL restore drill blocker and current audit findings; do not claim Stage 1 complete while the P0 gate remains open.

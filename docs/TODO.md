@@ -75,6 +75,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-02:** Menutup gap PRD untuk pengurutan destinasi: field integer `sortOrder` dengan default migrasi 0, input admin create/edit, validasi rentang DB dan urutan pohon publik. Tes RED→GREEN meliputi urutan/tie, validasi negatif/pecahan/null/out-of-range, dan input panel. Edit trip menjaga posisi kunjungan yang tersimpan saat urutan katalog berubah; audit destinasi merekam nilai urutan sebelum/sesudah.
 - **2026-11-02:** Migration pengurutan destinasi terpasang di PostgreSQL lokal; lint, 58 tes, typecheck, build, booking/auth DB checks dan validasi schema lulus. Service `nodejs` berjalan dari `D:\Project\tms`; setelah restart, `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` HTTP 200.
 - **2026-11-02:** Review independen menemukan edit trip bisa menulis ulang urutan kunjungan saat urutan opsi katalog berubah; helper edit kini mempertahankan posisi tersimpan dan tes regresi lulus. Audit order destinasi juga mencatat nilai lama/baru.
+- **2026-11-02:** Implementasi pengurutan destinasi dan perbaikan review (`c60b8c9`, `b6e4e33`) sudah dipush ke `origin/main`.
 - **2026-11-02:** Commit `8d7ff23 feat(stage-1): complete catalogue and booking flows` sudah dipush ke `origin/main`. Tahap 1 tetap blocked oleh restore drill P0.
 
 ## Terblokir (Blocked)
