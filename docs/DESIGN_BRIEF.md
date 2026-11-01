@@ -2,7 +2,7 @@
 
 ## Tujuan dan nada merek
 
-Membantu wisatawan merencanakan trip Kotabaru dan memesan dengan rasa aman. Nada Bahasa Indonesia yang ramah, jelas, lokal, dan praktis. Jangan menyatakan fakta destinasi yang belum disahkan operator; tandai `TBD: diisi pemilik bisnis` pada konten internal sampai bahan tersedia.
+Membantu wisatawan menemukan dan membandingkan perjalanan ke berbagai daerah yang dikelola satu operator, lalu memesan dengan rasa aman. Kotabaru adalah daerah awal. Nada Bahasa Indonesia yang ramah, jelas, lokal, dan praktis. Jangan menyatakan fakta destinasi yang belum disahkan operator; tandai `TBD: diisi pemilik bisnis` pada konten internal sampai bahan tersedia.
 
 **ASUMSI visual:** identitas warna belum tersedia; token berikut adalah titik awal netral yang dapat diganti setelah aset/brand guide localway.id diverifikasi. Jangan memakai logo atau foto akun Instagram tanpa hak dan persetujuan.
 
@@ -42,12 +42,12 @@ Dark mode proposal: background `#111816`, surface `#1A2421`, text `#F1F5F3`, mut
 ## Halaman dan wireframe berbasis teks
 
 - **Beranda:** header logo/navigasi → pencarian tanggal/destinasi → trip unggulan dan jadwal terdekat → panduan singkat → footer kontak/kebijakan. Hero foto hanya bila aset disetujui.
-- **Daftar trip:** heading + filter (tanggal, durasi, budget, destinasi) → chip filter aktif → kartu trip (nama, gambar, harga, tanggal terdekat, sisa kursi) → pagination/empty state.
+- **Daftar trip:** heading + navigasi/pilihan daerah bertingkat + filter (tanggal, durasi, budget, destinasi) → chip filter aktif → kartu trip (nama, daerah utama, destinasi lain, gambar, harga, tanggal terdekat, sisa kursi) → pagination/empty state.
 - **Detail trip:** breadcrumb → gallery → nama/harga/ringkas jadwal → pilihan jadwal dan CTA sticky mobile → itinerary per hari → include/exclude → meeting point → syarat/pembatalan → jadwal lain → FAQ dari owner.
 - **Booking:** ringkasan trip/jadwal/kuota → data pemesan → daftar data peserta → rincian dan total → checkbox persetujuan → tombol Booking → konfirmasi hold dan countdown.
 - **Pembayaran/status:** kode booking dan jumlah/batas waktu → tombol VA/QRIS (via hosted flow Midtrans) → instruksi dan refresh status → hasil sukses/pending/gagal/expired + chat admin.
 - **Cek booking:** field kode + email/nomor telepon untuk verifikasi → status minimal dan tindakan selanjutnya; jangan membuka PII peserta tanpa autentikasi kuat.
-- **Halaman destinasi/artikel:** judul, copy yang disetujui, daftar trip terkait, FAQ dan metadata SEO.
+- **Halaman daerah/destinasi/artikel:** breadcrumb daerah induk → anak → judul/copy yang disetujui → daftar trip terkait → FAQ dan metadata SEO. Daerah kosong menampilkan empty state yang mengarahkan ke daerah lain.
 - **Admin login:** brand, email/password, show-password, link reset hanya bila flow tersedia.
 - **Admin dashboard:** ringkasan booking perlu tindakan, jadwal mendatang dan kapasitas → navigasi trip, jadwal, booking, laporan.
 - **Admin daftar/ detail booking:** filter status/tanggal → tabel responsif → timeline pembayaran/audit → aksi batalkan, pindah, refund dengan konfirmasi dan alasan.
@@ -60,7 +60,7 @@ Dark mode proposal: background `#111816`, surface `#1A2421`, text `#F1F5F3`, mut
 
 ## Navigasi
 
-Publik: Beranda → Trip → Detail → Booking → Pembayaran/Status; footer ke destinasi, panduan, kebijakan dan kontak. Aksi “Cek booking” selalu tersedia. Admin memiliki area `/admin` terpisah dengan login, dashboard, trip, jadwal, booking, laporan. Agen tidak memiliki area MVP.
+Publik: Beranda → pilih daerah → daftar trip (filter lanjutan) → Detail → Booking → Pembayaran/Status; footer ke daerah/destinasi, panduan, kebijakan dan kontak. Aksi “Cek booking” selalu tersedia. Admin memiliki area `/admin` terpisah dengan login, dashboard, pengelolaan hierarki daerah, trip, jadwal, booking, laporan. Agen tidak memiliki area MVP.
 
 ## State UI
 

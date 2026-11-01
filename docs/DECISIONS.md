@@ -17,6 +17,12 @@
 | Redis + BullMQ mulai Tahap 2 | Tahap 1 cukup memakai Nest scheduler dan DB; queue dipakai saat retry/worker memang diperlukan. | Memasang Redis sejak awal menambah service/dependensi lokal tanpa manfaat MVP inti. |
 | Uptime Kuma awal; Prometheus/Grafana Tahap 3 | Monitoring ringan mendahului observability yang lebih lengkap. | Stack monitoring penuh pada server kecil berisiko menambah beban/disk terlalu cepat. |
 
+## Katalog multi-daerah
+
+**Keputusan (atas permintaan pemilik, 2026-11-01):** tetap satu operator pada MVP, tetapi trip dapat ditawarkan di banyak daerah. Simpan `Destination` sebagai pohon parent-child yang dapat dikelola admin; hubungkan `Trip` ke satu atau beberapa destinasi dengan tabel penghubung `TripDestination` yang menyimpan urutan dan destinasi utama. Halaman daerah dan filter menggunakan data aktif dari database. Kotabaru adalah daerah awal, bukan nilai yang di-hardcode.
+
+Alternatif satu kolom kota pada `Trip` ditolak karena membatasi satu tujuan/struktur lokasi dan menaruh domain bisnis di field teks. Marketplace multi-operator ditolak karena tetap di luar MVP. Tidak menetapkan daftar provinsi/kota pada kode; data awal dan konten faktual tetap perlu persetujuan pemilik bisnis.
+
 ## PostgreSQL lokal dan Redis
 
 **Keputusan:** pada laptop Windows gunakan installer resmi PostgreSQL, bukan Docker Compose. Pemeriksaan 2026-11-01 tidak menemukan `docker`, `psql`, `postgres`, `node`, atau `npm` pada PATH. Installer PostgreSQL paling sederhana untuk database tunggal Tahap 1 dan menghindari ketergantungan Docker; jalankan database lokal/loopback dan jangan ubah service laptop secara otomatis. PostgreSQL belum dipasang oleh pekerjaan ini. Redis ditunda sampai Tahap 2; pilihan runtime lokal (Docker/WSL/distribusi kompatibel) diputuskan saat kebutuhan queue nyata dan lingkungan diperiksa.

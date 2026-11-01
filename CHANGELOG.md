@@ -8,3 +8,4 @@ Semua perubahan penting proyek dicatat di sini. Format mengikuti [Keep a Changel
 
 - Dokumentasi Tahap 0 untuk kebutuhan, desain, arsitektur, keamanan, operasi, dan pengujian.
 - Panduan kerja proyek serta skill Karpathy dan Ponytail yang dipasang secara manual.
+- Perluasan katalog agar satu operator dapat mengatur trip di berbagai daerah, dengan Kotabaru sebagai daerah awal.

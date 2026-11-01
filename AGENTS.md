@@ -2,7 +2,7 @@
 
 ## Project
 
-Build a Bahasa Indonesia travel booking system for one Kotabaru tour operator. The MVP covers operator-owned open trips and packages, schedules and capacity, DP and final payment through Midtrans, and an admin panel. The product and business source of truth is `docs/PRD.md`; the canonical flow is `docs/BUSINESS_FLOW.md` and must be followed by the PRD, test plan, and later implementation.
+Build a Bahasa Indonesia travel booking system for one operator that offers operator-owned trips and packages across multiple configurable regions. Kotabaru, South Kalimantan is an initial area, not a hardcoded product limit. Admins manage a hierarchy of areas/destinations and associate one or more destinations with a trip. The MVP also covers schedules and capacity, DP and final payment through Midtrans, and an admin panel. The product and business source of truth is `docs/PRD.md`; the canonical flow is `docs/BUSINESS_FLOW.md` and must be followed by the PRD, test plan, and later implementation.
 
 ## Planned stack and repository
 

@@ -29,6 +29,9 @@ Seluruh test bisnis mengacu pada `BUSINESS_FLOW.md` dan state machine PRD. Test 
 | AUTH-05 | Customer/agent memanggil endpoint admin | Ditolak 401/403 oleh server meski request dibuat manual. |
 | CAT-01 | Filter tanggal/destinasi/durasi/budget | Hasil cocok filter; sort/input invalid ditolak/diabaikan sesuai kontrak dan tidak diinjeksi. |
 | CAT-02 | Jadwal tidak aktif/kuota habis | Tidak dapat dipesan; kuota publik tidak dijadikan jaminan transaksi. |
+| CAT-03 | Admin tambah/edit/urutkan/arsipkan daerah serta anak daerah | Perubahan langsung tampil di katalog/SEO tanpa deploy; area yang masih terpakai trip aktif tidak dapat dihapus tanpa relokasi terkonfirmasi. |
+| CAT-04 | Satu trip terkait beberapa destinasi dengan urutan dan lokasi utama | Trip muncul pada tiap filter/halaman daerah yang sesuai; lokasi utama konsisten pada kartu, slug/metadata dan JSON-LD. |
+| CAT-05 | Filter area induk dan anak / katalog tanpa filter area | Area induk mencakup trip terkait destinasi turunannya; tanpa area filter tetap tampil semua trip publik yang tersedia. |
 | BOOK-01 | Booking valid, 7+ hari tersisa | Booking menahan kapasitas dan membentuk tagihan DP 30%. |
 | BOOK-02 | Booking dibuat <7 hari sebelum berangkat | Syarat pembayaran penuh diterapkan. |
 | BOOK-03 | Dua transaksi memperebutkan 1 kursi | Tepat satu berhasil, satu mendapat kapasitas penuh; sisa kuota tak negatif. Jalankan bersamaan pada PostgreSQL, bukan mock. |
@@ -56,7 +59,7 @@ Seluruh test bisnis mengacu pada `BUSINESS_FLOW.md` dan state machine PRD. Test 
 
 ## Data uji
 
-- Destination Kotabaru dan trip contoh berlabel `TEST`; jangan mengklaim fakta tempat yang belum diberikan pemilik.
+- Daerah contoh Kotabaru, Kalimantan Selatan dan Bali hanya dipakai sebagai fixture `TEST` berdasarkan referensi pengguna; trip, harga dan fakta wisata tetap dummy/berlabel `TEST`, tidak dipublikasikan sebagai klaim produk sebelum disetujui pemilik.
 - Jadwal batas timezone WITA: H-10, H-8, H-7, tepat 7 hari, kurang 7 hari, DST/UTC conversion fixture, lewat midnight lokal.
 - Capacity 1, capacity 0, beberapa peserta, perubahan jadwal, schedule inactive.
 - IDR integer: harga rendah, nilai batas/rupiah, DP 30% dengan aturan rounding yang perlu diputuskan (`TBD` owner), total penuh; tolak float/negatif/overflow.

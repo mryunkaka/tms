@@ -2,17 +2,18 @@
 
 ## Ringkasan
 
-Travel Management System untuk satu operator lokal yang menjual open trip dan paket wisata miliknya sendiri ke Kotabaru, Kalimantan Selatan. Pengunjung menemukan trip melalui mesin pencari, membandingkan jadwal, memesan kursi, membayar DP/pelunasan, dan memperoleh informasi keberangkatan. Admin mengelola katalog, kuota, peserta, dan tindak lanjut pembayaran.
+Travel Management System untuk satu operator yang menjual open trip dan paket wisata miliknya sendiri di berbagai daerah. Kotabaru, Kalimantan Selatan adalah daerah awal, bukan batas sistem. Admin dapat menambahkan struktur daerah/destinasi dan mengaitkan perjalanan ke satu atau beberapa lokasi tanpa perubahan kode. Pengunjung menemukan daerah/trip melalui mesin pencari, membandingkan jadwal, memesan kursi, membayar DP/pelunasan, dan memperoleh informasi keberangkatan.
 
 Dokumen ini tunduk pada alur bisnis lengkap di [BUSINESS_FLOW.md](BUSINESS_FLOW.md). Parameter di alur bisnis adalah asumsi konfigurasi; tanggal batas dan angka tidak boleh ditanam sebagai literal kode.
 
 ## Latar belakang dan masalah
 
-Calon wisatawan kesulitan menemukan satu sumber yang jelas untuk melihat jadwal, harga, kuota, itinerary, dan cara membayar trip Kotabaru. Pemesanan manual berisiko menimbulkan konflik kursi, rekonsiliasi pembayaran terlambat, dan daftar peserta yang tidak konsisten.
+Calon wisatawan kesulitan menemukan satu sumber yang jelas untuk melihat pilihan daerah, jadwal, harga, kuota, itinerary, dan cara membayar perjalanan. Pemesanan manual berisiko menimbulkan konflik kursi, rekonsiliasi pembayaran terlambat, dan daftar peserta yang tidak konsisten.
 
 ## Tujuan dan metrik keberhasilan
 
 - Calon peserta dapat menemukan trip dan jadwal yang tersedia dari ponsel.
+- Admin dapat menambah, menyunting, mengurutkan, mengarsipkan daerah/destinasi dan memilihnya untuk trip tanpa perubahan kode; katalog dan SEO menampilkan pilihan daerah yang aktif.
 - Tidak ada jadwal yang terjual melebihi kuota, termasuk saat kursi terakhir dipesan serentak.
 - Setiap pembayaran cocok dengan satu booking dan satu order Midtrans; notifikasi berulang tidak menggandakan pembayaran atau kuota.
 - Admin dapat mengelola trip, memantau pembayaran, dan mengunduh manifest.
@@ -26,7 +27,7 @@ Marketplace multi-operator, pembelian tiket pesawat/hotel, portal/akun agen, Wha
 
 ## Pengguna, persona, dan peran
 
-- **Rina, calon peserta/customer:** mencari perjalanan Kotabaru, membandingkan jadwal dan biaya, memesan untuk rombongan, lalu membayar.
+- **Rina, calon peserta/customer:** memilih daerah yang diminati, membandingkan perjalanan, jadwal dan biaya, memesan untuk rombongan, lalu membayar.
 - **Admin/operator:** memasukkan produk dan jadwal, memantau kuota, menangani perubahan/pembatalan/refund, serta menyiapkan manifest.
 - **Agen:** peran yang dikenal bisnis, tetapi akun agen dan alur komisi/penjualan mandiri berada di luar MVP sebagaimana `BUSINESS_FLOW.md`. Role disediakan untuk pengembangan lanjutan tanpa akses MVP.
 - **Customer:** dapat melakukan booking guest dengan email/telepon dan kode booking sebagai **ASUMSI MVP** untuk mengurangi hambatan. Perlu dikonfirmasi pemilik bisnis.
@@ -52,6 +53,9 @@ RBAC ditegakkan di API, bukan hanya menyembunyikan tombol di web. Admin memiliki
 
 ### Katalog produk
 
+- Admin dapat mengelola hierarki lokasi (misalnya wilayah/daerah induk → daerah/kota → destinasi/objek wisata) melalui panel. Kedalaman/jenis tingkat tidak di-hardcode; admin dapat membuat tingkat sesuai kebutuhan operator.
+- Admin dapat mengaitkan trip ke satu atau beberapa destinasi; urutan kunjungan dapat disusun, dan satu lokasi utama dipilih untuk kartu/listing serta metadata SEO.
+- Arsip/nonaktifkan daerah tidak menghapus histori booking/trip; daerah yang masih dipakai trip terpublikasi harus ditolak penghapusannya atau memerlukan pemindahan terkonfirmasi.
 - Admin dapat membuat/mengubah destination, trip/paket, itinerary, include/exclude, titik kumpul, syarat, kebijakan, dan slug.
 - Admin dapat mengaktifkan jadwal dengan waktu berangkat, kuota, harga IDR integer, kuota minimum dan status publikasi.
 - Jadwal yang dinonaktifkan tidak dapat menerima booking baru; perubahan pada jadwal berisi peserta memicu alur pemberitahuan dan pilihan peserta.
@@ -60,6 +64,7 @@ RBAC ditegakkan di API, bukan hanya menyembunyikan tombol di web. Admin memiliki
 ### Pencarian dan SEO
 
 - Pengunjung dapat memfilter daftar trip menurut tanggal, durasi, budget, dan destinasi; hasil menampilkan harga, jadwal terdekat, dan sisa kursi.
+- Pengunjung dapat menelusuri halaman daerah/destinasi dari navigasi, memilih daerah induk atau anak, dan hanya melihat trip aktif terkait. Katalog tetap dapat dipakai tanpa memilih daerah.
 - Detail menampilkan itinerary, include/exclude, titik kumpul, syarat/kebijakan pembatalan, dan jadwal lain.
 - Halaman publik memakai SSR/SSG sesuai kebutuhan data, metadata unik, slug, sitemap, robots, JSON-LD dan Open Graph. Halaman publik harus tetap bisa dibaca dengan JavaScript seminimal mungkin dan layout mobile-first.
 - Beranda, destinasi, artikel panduan, dan cek status tersedia. Konten editorial yang belum disetujui diberi status TBD, tidak diisi fakta karangan.
@@ -138,7 +143,7 @@ Pembatalan customer atau operator masuk ke antrean kerja admin. Jika operator me
 
 ## Gambaran model data
 
-`User` memiliki satu/lebih `Role` (`ADMIN`, `AGENT`, `CUSTOMER`) dan token refresh yang disimpan hash. `Destination` memiliki banyak `Trip`; `Trip` memiliki `TripSchedule`. `Booking` terhubung ke satu jadwal dan menyimpan snapshot harga, jumlah, kontak pemesan, status, hold deadline, serta peserta (`Participant`). `Payment` terkait ke booking dan menyimpan jenis, order ID Midtrans unik, jumlah, status provider, waktu dan referensi event idempoten. `Notification` mencatat jenis, tujuan, status kirim, percobaan. `AuditLog` mencatat tindakan sensitif. Skema Prisma final di Tahap 1.
+`User` memiliki satu/lebih `Role` (`ADMIN`, `AGENT`, `CUSTOMER`) dan token refresh yang disimpan hash. `Destination` memiliki relasi induk-anak untuk mengelola hierarki daerah tanpa daftar lokasi hardcode. Relasi banyak-ke-banyak `TripDestination` mengaitkan satu trip dengan satu atau beberapa destinasi, urutan kunjungan, dan lokasi utama untuk SEO. `Trip` memiliki `TripSchedule`. `Booking` terhubung ke satu jadwal dan menyimpan snapshot harga, jumlah, kontak pemesan, status, hold deadline, serta peserta (`Participant`). `Payment` terkait ke booking dan menyimpan jenis, order ID Midtrans unik, jumlah, status provider, waktu dan referensi event idempoten. `Notification` mencatat jenis, tujuan, status kirim, percobaan. `AuditLog` mencatat tindakan sensitif. Skema Prisma final di Tahap 1.
 
 ## Endpoint API tingkat tinggi (rancangan)
 
@@ -147,10 +152,10 @@ Semua API memakai prefix `/api/v1`; nama final dan kontrak dicatat saat Tahap 1.
 | Area | Rute tingkat tinggi | Akses |
 |---|---|---|
 | Auth | `POST /auth/login`, `/auth/refresh`, `/auth/logout`, `GET /auth/me` | Admin; cookie refresh |
-| Katalog | `GET /destinations`, `GET /trips`, `GET /trips/:slug`, `GET /trips/:slug/schedules` | Publik |
+| Katalog | `GET /destinations`, `GET /destinations/:slug`, `GET /trips?destination=...`, `GET /trips`, `GET /trips/:slug`, `GET /trips/:slug/schedules` | Publik |
 | Booking | `POST /bookings`, `GET /bookings/:code` | Guest dengan validasi input; lookup verifikasi kontak |
 | Payment | `POST /bookings/:code/payments`, `POST /payments/midtrans/webhook` | Booking terkait; webhook server-to-server tervalidasi |
-| Admin katalog | `/admin/destinations`, `/admin/trips`, `/admin/schedules` CRUD | Admin |
+| Admin katalog | `/admin/destinations` CRUD/tree, `/admin/trips` CRUD dan relasi destinasi, `/admin/schedules` CRUD | Admin |
 | Admin operasi | `/admin/bookings`, `/admin/bookings/:id/status`, `/admin/schedules/:id/manifest`, `/admin/payments/:id/refund` | Admin |
 | Kesehatan | `GET /health/live`, `/health/ready` | Readiness publik terbatas |
 
@@ -183,7 +188,8 @@ Semua API memakai prefix `/api/v1`; nama final dan kontrak dicatat saat Tahap 1.
 
 ## Asumsi
 
-- Operator adalah satu bisnis lokalway.id; detail produknya belum diverifikasi.
+- Operator adalah satu bisnis localway.id; detail produk dan daerah peluncuran selain Kotabaru belum diverifikasi.
+- Daerah/destinasi dikelola admin sebagai hierarki data; struktur dapat mengikuti kebutuhan lokasi operator. Trip dapat mengunjungi beberapa destinasi.
 - DP 30%, hold 2 jam, jatuh tempo pelunasan dan minimum open trip mengikuti `BUSINESS_FLOW.md`, disimpan sebagai konfigurasi.
 - Booking guest dipakai pada MVP untuk menekan hambatan, dengan lookup code + verifikasi kontak.
 - H-10/H-8 adalah pengingat otomatis; semua batas lokal dihitung memakai `Asia/Makassar`, disimpan UTC.

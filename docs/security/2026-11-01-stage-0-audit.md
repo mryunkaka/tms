@@ -58,3 +58,9 @@
 - Status/port/role/tahap, timezone, state booking, guest assumption, test cases dan dokumentasi keamanan dicocokkan lintas dokumen. PRD dan test plan menutup race kursi terakhir, expiry, webhook ganda/late/out-of-order, payment after expiry, pelunasan terlambat, operator schedule change/refund.
 - `git diff --check`: lulus untuk perubahan yang ditinjau.
 - Lint/build/unit/integration/e2e/npm audit: belum tersedia karena Stage 0 tidak membuat aplikasi/dependencies.
+
+## Addendum review perubahan cakupan daerah — 2026-11-01
+
+- Atas permintaan pemilik, katalog kini menyebut daerah yang dapat dikelola admin; Kotabaru hanya data awal, satu operator tetap batas MVP.
+- PRD, alur bisnis, design brief, arsitektur, keputusan, test plan, README, AGENTS, TODO dan changelog dicocokkan untuk relasi hierarki daerah, filter area induk/anak, trip multi-destinasi, halaman SEO dan acceptance tests.
+- `git diff --check`: lulus. Tidak ada kode/runtime yang ditambahkan; audit aplikasi tetap belum tersedia.

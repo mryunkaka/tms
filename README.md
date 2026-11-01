@@ -1,6 +1,6 @@
 # Travel Management System
 
-Sistem booking untuk satu operator open trip dan paket wisata di Kotabaru, Kalimantan Selatan. MVP mencakup jadwal dan kuota, pembayaran DP dan pelunasan, serta panel admin.
+Sistem booking untuk satu operator open trip dan paket wisata di berbagai daerah yang dikelola admin. Kotabaru, Kalimantan Selatan menjadi daerah awal; daftar wilayah dan destinasi dapat ditambah tanpa mengubah kode. MVP mencakup jadwal dan kuota, pembayaran DP dan pelunasan, serta panel admin.
 
 ## Prasyarat pengembangan Windows
 

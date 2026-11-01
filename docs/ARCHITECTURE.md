@@ -39,7 +39,7 @@ Workspace root memakai npm workspaces; versi Node yang ditargetkan Node.js v24. 
 
 - `AuthModule`: login, access JWT, refresh token rotation/revocation, cookies, RBAC guards.
 - `UsersModule`: admin/user/role, provisioning dan audit.
-- `DestinationsModule`, `TripsModule`, `SchedulesModule`: konten publik dan administrasi.
+- `DestinationsModule`, `TripsModule`, `SchedulesModule`: konten publik dan administrasi; `Destination` memakai parent-child, sedangkan `TripDestination` menyimpan relasi banyak-ke-banyak, urutan dan lokasi utama.
 - `BookingsModule`: validasi checkout, transaksi kapasitas, lookup status.
 - `PaymentsModule`: Payment records, Midtrans create/status integration, anomaly review.
 - `WebhooksModule`: validasi signature, inbox/idempotency, Status API reconciliation.
@@ -62,7 +62,7 @@ Detail konfigurasi dan threat model ada di `SECURITY.md`.
 
 ## Kapasitas, booking, dan pembayaran
 
-Satu transaksi DB memvalidasi status jadwal, mengunci row `TripSchedule` (atau serializable strategy teruji), menghitung kapasitas aktif, membuat booking/participant dan hold, lalu commit. Status/kuota tidak diubah dari nilai stale yang dibaca sebelum transaksi. Payment, webhook inbox, dan transisi state menggunakan unique constraint/idempotency serta conditional update. Pengembalian kuota hanya sekali.
+Satu transaksi DB memvalidasi status jadwal, mengunci row `TripSchedule` (atau serializable strategy teruji), menghitung kapasitas aktif, membuat booking/participant dan hold, lalu commit. Status/kuota tidak diubah dari nilai stale yang dibaca sebelum transaksi. Area yang dipilih customer/admin mengacu ke record `Destination`, bukan konstanta kota; query untuk area induk mencakup trip yang terkait ke turunannya. Payment, webhook inbox, dan transisi state menggunakan unique constraint/idempotency serta conditional update. Pengembalian kuota hanya sekali.
 
 Tahap 1 scheduler NestJS mengecek hold kedaluwarsa; scheduler dapat hidup di API tunggal. Saat menjalankan beberapa instance, distributed locking/job queue menjadi prasyarat untuk tugas lintas instance. Tahap 2 Redis + BullMQ menyediakan retry dan worker; PostgreSQL tetap sumber kebenaran, job dapat diproses ulang.
 
