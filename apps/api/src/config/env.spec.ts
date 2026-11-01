@@ -9,8 +9,9 @@ const validEnvironment = {
 
 describe('environment validation', () => {
   it('applies safe defaults when optional example values are blank', () => {
-    expect(loadEnv({ ...validEnvironment, NODE_ENV: '', API_PORT: '', ACCESS_TOKEN_TTL_SECONDS: '', REFRESH_TOKEN_TTL_DAYS: '' })).toMatchObject({
+    expect(loadEnv({ ...validEnvironment, NODE_ENV: '', API_PORT: '', ACCESS_TOKEN_TTL_SECONDS: '', REFRESH_TOKEN_TTL_DAYS: '', BOOKING_HOLD_MINUTES: '', DOWN_PAYMENT_PERCENT: '' })).toMatchObject({
       NODE_ENV: 'development', API_PORT: 3001, ACCESS_TOKEN_TTL_SECONDS: 900, REFRESH_TOKEN_TTL_DAYS: 30,
+      BOOKING_HOLD_MINUTES: 120, DOWN_PAYMENT_PERCENT: 30,
     });
   });
 

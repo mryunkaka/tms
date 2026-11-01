@@ -18,7 +18,8 @@
     "db:migrate": "npm run db:migrate --workspace @tms/api",
     "db:deploy": "npm run db:deploy --workspace @tms/api",
     "db:seed": "npm run db:seed --workspace @tms/api",
-    "db:backup:test": "npm run db:backup:test --workspace @tms/api"
+    "db:backup:test": "npm run db:backup:test --workspace @tms/api",
+    "db:booking:test": "npm run db:booking:test --workspace @tms/api"
   },
   "engines": {
     "node": ">=24 <25",

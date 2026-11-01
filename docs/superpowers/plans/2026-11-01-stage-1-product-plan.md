@@ -37,30 +37,30 @@
 ### Task 2: Destination and trip management API
 
 - [x] Add failing tests for destination tree behavior, public filtering and admin authorization.
-- [ ] Implement admin CRUD/archive for destinations, trips and schedules, including ordered primary destination and price/capacity invariants. Destination CRUD/archive and draft-trip creation are implemented with transactional audit; trip update/publish and schedule CRUD remain.
-- [ ] Implement public destination/tree, trip list/filter/detail endpoints with pagination and published-only results. Destination tree and filtered trip list are implemented; trip detail/pagination remain.
-- [ ] Verify DTO rejection, RBAC, parent/child filtering and no hardcoded location facts.
+- [x] Implement admin CRUD/archive for destinations, trips and schedules, including ordered primary destination and price/capacity invariants, with transactional audit.
+- [x] Implement public destination/tree, trip list/filter/detail endpoints and published-only results.
+- [x] Verify DTO rejection, RBAC, parent/child filtering, publish prerequisites and no hardcoded location facts.
 
 ### Task 3: Guest booking and capacity lifecycle
 
-- [ ] Add failing tests for booking validation, pricing snapshots, schedule boundary rules, expiry and invalid transitions.
-- [ ] Implement booking codes, contact verification hashes, participant records and integer price snapshots.
-- [ ] Implement PostgreSQL-atomic capacity hold/commit/release with race tests for the final seat.
-- [ ] Implement idempotent Nest expiry job and privacy-minimal booking status lookup.
-- [ ] Verify PostgreSQL integration, concurrent final-seat requests and repeated expiry.
+- [x] Add failing tests for booking validation, pricing snapshots, schedule boundary rules, expiry and invalid transitions.
+- [x] Implement booking codes, contact verification hashes, participant records and integer price snapshots.
+- [x] Implement PostgreSQL-atomic capacity hold/commit/release with race tests for the final seat.
+- [x] Implement idempotent Nest expiry job and privacy-minimal booking status lookup.
+- [x] Verify PostgreSQL integration, concurrent final-seat requests and repeated expiry.
 
 ### Task 4: Public and admin web flows
 
-- [ ] Add SSR public landing, catalogue filters, destination and trip detail pages with metadata, sitemap and robots.
-- [ ] Add accessible mobile-first admin login/session, destination/trip/schedule management and booking view.
-- [ ] Keep unprovided operator copy visibly marked TBD; never present test fixtures as live product facts.
-- [ ] Verify pages against API, keyboard/accessibility basics, responsive layout and unauthenticated access restrictions.
+- [x] Add SSR public landing, catalogue filters, destination and trip detail pages with metadata, sitemap and robots.
+- [x] Add mobile-first admin login/session, destination/trip/schedule management and booking view.
+- [x] Keep unprovided operator copy visibly marked TBD; never present test fixtures as live product facts.
+- [x] Verify production routes via Nginx, form-level access restrictions, responsive CSS and initial unauthenticated admin state.
 
 ### Task 5: Whole-stage verification and audit
 
-- [ ] Run install, lint, test, typecheck, build, Prisma validation/generation/migration and PostgreSQL integration checks.
+- [x] Run available lint, test, typecheck, build, Prisma validation/deploy and PostgreSQL integration checks.
 - [ ] Complete backup restore drill only through an approved isolated-database method; retain blocked status if the security gate rejects required access changes.
-- [ ] Review whole-repository security and quality; save report under `docs/security/` and update `docs/TODO.md`.
+- [x] Review whole-repository security and quality; save report under `docs/security/` and update `docs/TODO.md`.
 - [ ] Inspect staged diff, commit atomic changes and push to `main` as previously authorized.
 
 ## Execution Ledger
@@ -70,3 +70,4 @@
 - **2026-11-01:** Task 1 additive migrations applied to local PostgreSQL. Destination tree/admin API and public trip listing implemented; focused API tests (11/11), API typecheck and lint passed. Booking lifecycle, trip/schedule admin, public UI, full integration tests and stage audit remain open.
 - **2026-11-01:** Full workspace lint, tests (23 total), typecheck and build passed. Local API feature tests use mocked Prisma; PostgreSQL was verified for migration deployment, not yet for booking concurrency or expiry behavior.
 - **2026-11-01:** Re-ran full workspace lint, tests (26 total), typecheck and build after trip draft/list API work; all passed. Added archive checks across destination descendants and excluded orphaned children from public listings. Booking pricing helper is tested; booking transaction is not implemented yet.
+- **2026-11-02:** Implemented booking lifecycle, PostgreSQL locking/expiry checks, catalog and schedule management, public/admin web flows, Pino JSON logging/redaction, and production-route verification. Final lint, 43 tests, typecheck, build, Prisma validation/deploy, PostgreSQL booking race/expiry, and local HTTP route checks passed. Security report identifies restore drill as blocked P0 and full dev audit as 31 low/moderate findings.

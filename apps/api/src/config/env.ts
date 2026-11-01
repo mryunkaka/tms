@@ -9,6 +9,8 @@ const schema = z.object({
   JWT_ACCESS_SECRET: z.string().min(32),
   ACCESS_TOKEN_TTL_SECONDS: blankIsMissing(z.coerce.number().int().min(60).max(3600)).default(900),
   REFRESH_TOKEN_TTL_DAYS: blankIsMissing(z.coerce.number().int().min(1).max(90)).default(30),
+  BOOKING_HOLD_MINUTES: blankIsMissing(z.coerce.number().int().min(5).max(1440)).default(120),
+  DOWN_PAYMENT_PERCENT: blankIsMissing(z.coerce.number().int().min(1).max(99)).default(30),
   WEB_ORIGIN: z.string().url(),
   INITIAL_ADMIN_EMAIL: blankIsMissing(z.string().email().optional()),
   INITIAL_ADMIN_PASSWORD: blankIsMissing(z.string().min(12).optional()),

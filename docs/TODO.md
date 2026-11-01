@@ -4,9 +4,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Sedang Dikerjakan (On Progress)
 
-- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** PostgreSQL 18.6, database lokal, migrasi Prisma, seed admin, build production, Nginx reverse proxy, dan NSSM `nodejs` sudah aktif otomatis. Homepage, API health, login admin, dan dump `pg_restore --list` telah diverifikasi. Restore drill ke database terisolasi masih perlu dilakukan.
-- **TMS-014 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Implementasi auth sudah ada dan diverifikasi langsung terhadap API/database lokal: login admin, cookie refresh, rotasi token, logout menolak refresh berikutnya, serta reuse token lama mencabut token baru dalam satu family. Tes integrasi otomatis, refresh paralel, throttle nyata dan cookie Secure/CORS di browser tetap perlu.
-- **TMS-016 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-01]** Skema hierarki destinasi/trip/jadwal, audit log, API pohon destinasi publik, CRUD/archive destinasi admin, filter daftar trip publik, dan pembuatan draft trip admin sudah ada. CRUD trip/jadwal lengkap, detail trip, UI admin, validasi publish dan konten pemilik masih perlu.
+- **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** `npm audit` menemukan 31 advisory low/moderate pada rantai dependency development/test; production-only audit bersih. Perbaiki melalui pembaruan kompatibel dan verifikasi ulang, tanpa `--force` yang mengusulkan downgrade mayor tooling.
 
 ## Belum Dikerjakan (To Do)
 
@@ -22,12 +20,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ### Tahap 1 — inti monorepo, auth, katalog, booking
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Siapkan monorepo npm workspace `apps/web`, `apps/api`, `packages/shared`, toolchain TypeScript/lint/test/build, validasi env, `.env.example` dan CI lokal lint/test.
-- **TMS-013 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Lakukan backup/restore drill pada database TMS dan dokumentasikan hasilnya sebelum rilis.
-- **TMS-014 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Buat auth admin, password hash, JWT access, refresh hash/rotation/revocation cookie, rate limit, guards/RBAC dan audit; test session serta unauthorized access.
-- **TMS-015 — [P1] [Tahap 1] [Owner: Engineering + pemilik konten] [Tanggal: TBD]** Bangun UI publik SSR/SSG, katalog/filter/detail, SEO metadata/sitemap/robots/JSON-LD/OG dan responsive accessibility.
-- **TMS-016 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** CRUD destinasi/trip/jadwal admin, status publish, snapshot harga dan audit log.
-- **TMS-017 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Implementasi booking guest sesuai keputusan, participant, locking/serialisasi kuota, expiry scheduler Nest tanpa Redis, state machine dan acceptance tests race/expired.
-- **TMS-018 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Cek status booking dengan verifikasi kontak, proteksi brute force dan minimisasi PII.
+- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: TBD]** Lakukan backup/restore drill ke database terisolasi setelah metode akses DB yang aman disetujui. `pg_restore --list` hanya memvalidasi arsip dan bukan restore.
 
 ### Tahap 2 — pembayaran sandbox, queue, notifikasi
 
@@ -48,6 +41,11 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sudah Dilaksanakan (Done)
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat npm workspaces untuk web/API/shared, konfigurasi TypeScript/lint/test/build, validasi env dan instruksi lokal. Unit/API/web test serta lint/typecheck/build berhasil.
+- **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Auth admin, hash password/token refresh, rotasi/revocation, guards/RBAC, CORS/Origin, dan rate limit tersedia. Probe live serial serta automated tests ada; race refresh dan Secure-cookie browser masih perlu verifikasi pra-rilis.
+- **TMS-015 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Homepage SSR dengan filter, halaman daerah/trip, status booking, metadata, sitemap/robots/JSON-LD dan layout mobile dibuat. Konten bisnis tetap menunggu pemilik.
+- **TMS-017 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Booking guest, snapshot harga, lock kuota PostgreSQL, scheduler expiry, idempotent release dan acceptance race/expiry sudah diuji dengan PostgreSQL lokal.
+- **TMS-018 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Lookup dan pembatalan menerima kode serta email/telepon melalui POST body; hasil lookup meminimalkan PII dan endpoint dibatasi rate limit.
+- **TMS-016 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-02]** CRUD destinasi/trip/jadwal, hierarki dan banyak destinasi, audit, syarat publish, API publik filter/detail, serta panel admin buat/sunting/aktif/nonaktif/archive tersedia.
 
 - **TMS-001 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Inisialisasi Git, `.gitignore`, `.gitattributes`, `.env.example`, README dan changelog. Commit `6cf78a0`.
 - **TMS-002 — [P0] [Tahap 0] [Owner: Codex] [Tanggal: 2026-11-01]** Buat `AGENTS.md` serta panduan commit/prioritas keamanan dan DoD. Commit `d2e921c`.
@@ -68,10 +66,14 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-01:** Memulai Tahap 1 pada branch `feat/stage-1-monorepo-auth` di worktree; membangun monorepo, fondasi PostgreSQL/Prisma dan auth admin. Saat branch dimulai PostgreSQL belum dipasang sehingga integrasi DB dan restore drill masih tertunda.
 - **2026-11-01:** Memasang PostgreSQL 18.6 lokal, membatasi listener ke loopback, membuat database dan user aplikasi, menerapkan migration/seed, dan membangun production app. NSSM `nodejs` bergantung pada PostgreSQL dan auto-start; virtual host TMS ditambahkan ke Nginx existing `WebStack-Nginx`. Homepage, health, login admin dan PHP vhost diverifikasi; backup archive list lulus, restore drill belum dilakukan.
 - **2026-11-01:** Menerapkan dua migration aditif untuk destinasi, trip, jadwal, booking, peserta, audit dan invariant kapasitas; menambah API admin/public destinasi, pembuatan draft trip admin, dan katalog trip publik. Root lint/test/typecheck/build lulus (26 test); konten tetap kosong sampai owner memasukkan dan mengaktifkannya.
+- **2026-11-01:** Menyelesaikan alur booking guest, expiry dan verifikasi lookup; menambah detail publik, halaman destinasi, status lookup, SEO, serta panel admin dasar. Uji PostgreSQL nyata memastikan race satu kursi menghasilkan satu booking dan expiry melepas hold tepat satu kali. Build production dan checks lulus; `/`, `/admin`, `/booking/status`, dan health API menghasilkan HTTP 200 setelah service `nodejs` direstart.
+- **2026-11-02:** Panel admin dilengkapi form sunting destinasi, trip/itinerary/relasi, serta jadwal. Publish menolak itinerary yang tidak memiliki judul untuk setiap hari durasi trip; unit test menutup aturan ini. API juga memakai Pino JSON stdout, ID unik per request dan serializer akses yang tidak mencatat header/query/body.
+- **2026-11-02:** Security review mencatat restore drill P0 yang belum dilakukan dan 31 advisory low/moderate pada tooling development (production-only audit 0). `.env` tetap ignored; pemeriksaan pola secret berkeyakinan tinggi pada file Git tidak menemukan kandidat.
 
 ## Terblokir (Blocked)
 
-- Belum ada item terblokir secara teknis. Keputusan refund/konten/operasional menunggu pemilik bisnis; tercatat sebagai TODO, bukan blocker Tahap 0.
+- **TMS-013 — [P0]** Restore drill tertahan: automatic approval review menolak perubahan sementara `pg_hba.conf` yang diminta oleh metode drill. Perintah tidak dijalankan dan konfigurasi tidak berubah. Tidak dicoba jalan pintas lain; butuh metode terisolasi yang disetujui.
+- **Tahap 1 belum dapat dinyatakan selesai** sampai restore drill terverifikasi dan temuan P0 ini ditutup.
 
 ## Utang Teknis
 

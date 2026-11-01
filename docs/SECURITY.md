@@ -45,6 +45,7 @@ Referensi resmi: [OWASP Top 10:2025](https://top10.owasp.org/2025/) dan [OWASP A
 - Prisma query parameterized; `$queryRawUnsafe` dilarang kecuali security-reviewed dan parameterized. Allowlist sort/filter fields.
 - React escaping standar; jangan gunakan raw HTML tanpa sanitizer dan review. CSP sesuai Next.js nonce/arsitektur; Helmet pada API/Nginx; HTTPS HSTS setelah TLS stabil.
 - CORS hanya origin web yang dikonfigurasi, methods/headers minimum, preflight diuji.
+- Pino menulis JSON ke stdout. Access log hanya mencatat request ID, method, path tanpa query, dan status; jangan menambahkan request body atau data kontak. Redaksi juga menutup header auth/cookie dan field rahasia/kontak pada structured logs.
 - Output error generik; stack trace hanya log internal yang sudah direduksi.
 
 ### Pembayaran Midtrans dan webhook
@@ -60,7 +61,7 @@ Referensi resmi: [OWASP Top 10:2025](https://top10.owasp.org/2025/) dan [OWASP A
 
 - Kumpulkan data minimum tiap peserta; manifest hanya admin dan hanya data lapangan perlu. Batasi export, audit siapa/apa/kapan, jangan menaruh PII di URL atau log.
 - Retensi, dasar pemrosesan, permintaan akses/hapus dan kebijakan breach `TBD` sebelum produksi.
-- Pino redact password, Authorization, Cookie/Set-Cookie, token, server key, signature, contact/participant fields. Gunakan reference ID untuk tracing.
+- Pino redact password, Authorization, Cookie/Set-Cookie, token, server key, signature, contact/participant fields. Gunakan request ID untuk tracing.
 - Audit log append-oriented untuk role, booking, kapasitas, status payment/refund dan perubahan trip; jangan menyimpan rahasia di diff before/after.
 
 ### Secret, dependency, server
@@ -82,16 +83,16 @@ Jalankan pada tiap rilis dan setelah perubahan auth, booking, payment atau infra
 6. Jalankan restore drill terjadwal sebelum go-live dan catat durasi/data point-in-time yang tercapai.
 7. Catat temuan severity, reproduksi/bukti, mitigasi, owner dan target; rilis tidak boleh mengabaikan P0/P1 tanpa persetujuan/mitigasi owner yang terdokumentasi.
 
-Status implementasi lokal per 2026-11-01: Tahap 1 aktif. PostgreSQL 18.6 memakai SCRAM dan hanya listen pada loopback; API dan web bind ke loopback di belakang service Nginx lokal. `.env` diabaikan Git dan ACL dibatasi ke pemilik, Administrators, dan SYSTEM. NSSM `nodejs` saat ini berjalan sebagai `LocalSystem`, sehingga setup ini tetap local-only; jangan expose ke LAN/internet. Buat service account berhak minimum sebelum mengubah batas akses.
+Status implementasi lokal per 2026-11-02: implementasi Tahap 1 berjalan lokal. PostgreSQL 18.6 memakai SCRAM dan hanya listen pada loopback; API dan web bind ke loopback di belakang service Nginx lokal. `.env` diabaikan Git dan ACL dibatasi ke pemilik, Administrators, dan SYSTEM. NSSM `nodejs` saat ini berjalan sebagai `LocalSystem`, sehingga setup ini tetap local-only; jangan expose ke LAN/internet. Buat service account berhak minimum sebelum mengubah batas akses.
 
-Migration, seed, build, test, lint, health endpoint, dan login admin telah diverifikasi pada mesin lokal. Pemeriksaan dump `pg_restore --list` lulus, tetapi restore drill ke database terisolasi masih tertunda. Ini bukan audit go-live; ikuti seluruh checklist di atas sebelum deployment VPS.
+Migration, seed, build, test, lint, health endpoint, login admin, kapasitas booking, dan expiry telah diverifikasi pada mesin lokal. Pemeriksaan dump `pg_restore --list` lulus, tetapi restore drill ke database terisolasi masih tertunda. Percobaan menggunakan perubahan sementara `pg_hba.conf` ditolak automatic approval review sebelum perintah berjalan; tidak ada perubahan konfigurasi dan tidak dilakukan percobaan alternatif. Ini bukan audit go-live; ikuti seluruh checklist di atas sebelum deployment VPS.
 # Implementasi awal auth admin
 
 - Password admin di-hash dengan Argon2id. Tidak ada registrasi publik atau kredensial bawaan.
 - Access token JWT berumur default 15 menit; secret minimal 32 karakter (64 di produksi).
 - Refresh token 256-bit hanya ada di cookie HttpOnly, `SameSite=Lax`, path `/api/v1/auth`, Secure di produksi. Database menyimpan SHA-256 hash; token berotasi saat refresh dan reuse token revoked mencabut seluruh family.
-- Login dibatasi 5 percobaan per menit per IP. Batas default API 100 request/menit per IP; storage rate limit saat ini in-memory, sesuai satu proses lokal.
+- Login dibatasi 5 percobaan per menit per IP. Batas default API 100 request/menit per IP; booking, lookup dan cancel dibatasi 5 request/menit per IP. Storage rate limit saat ini in-memory, sesuai satu proses lokal.
 - CORS hanya mengizinkan `WEB_ORIGIN` dengan credentials. Mutasi auth juga mensyaratkan Origin sama persis. DTO menolak field yang tidak dikenal.
-- PostgreSQL lokal kini tersedia; migration, seed, dan login admin melalui database telah diverifikasi. Persistence refresh paralel/reuse/logout dan race booking tetap belum diuji karena fitur booking belum diimplementasikan.
+- PostgreSQL lokal kini tersedia; migration, seed, login admin, race booking untuk kursi terakhir, dan expiry idempoten telah diverifikasi. Refresh-parallel dan cookie Secure/CORS browser masih perlu uji sebelum rilis.
 
 API mempercayai satu reverse proxy untuk `X-Forwarded-For` agar pembatasan login mengambil IP klien dari Nginx. Jangan expose port API langsung ke internet saat deployment.

@@ -5,6 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { afterAll, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { PrismaService } from '../src/database/prisma.service.js';
 import { AuthService } from '../src/auth/auth.service.js';
+import { BookingsService } from '../src/bookings/bookings.service.js';
+import { BookingExpiryScheduler } from '../src/bookings/booking-expiry.scheduler.js';
 
 jest.unstable_mockModule('@nestjs/throttler', () => ({
   ThrottlerModule: { forRoot: () => ({ module: class MockThrottlerModule {} }) },
@@ -25,6 +27,13 @@ describe('health route', () => {
     logout: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
     me: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
   };
+  const bookingsMock = {
+    create: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ code: '0123456789ABCDEF', status: 'PENDING_DP', totalPriceIdr: 10_000 }),
+    status: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ code: '0123456789ABCDEF', status: 'PENDING_DP', totalPriceIdr: 10_000 }),
+    cancel: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ status: 'CANCELLED' }),
+    expireDue: jest.fn<(...args: unknown[]) => Promise<number>>().mockResolvedValue(0),
+    listAdmin: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ items: [], nextCursor: null }),
+  };
   const destinationMock = {
       findMany: jest.fn<(...args: unknown[]) => Promise<unknown[]>>().mockResolvedValue([
         { id: 'destination-1', parentId: null, slug: 'wilayah-test', name: 'Wilayah TEST' },
@@ -38,9 +47,15 @@ describe('health route', () => {
     findUnique: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue(null),
     create: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ id: 'trip-new', slug: 'trip-test', name: 'Trip TEST', status: 'DRAFT' }),
   };
+  const scheduleMock = {
+    create: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({ id: 'schedule-new', isActive: false }),
+    findUnique: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+    update: jest.fn<(...args: unknown[]) => Promise<unknown>>(),
+  };
   const prismaTxMock = {
     destination: destinationMock,
     trip: tripMock,
+    tripSchedule: scheduleMock,
     tripDestination: { findFirst: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue(null) },
     auditLog: { create: jest.fn<(...args: unknown[]) => Promise<unknown>>().mockResolvedValue({}) },
   };
@@ -54,6 +69,8 @@ describe('health route', () => {
     const module = await Test.createTestingModule({ imports: [AppModule] })
       .overrideProvider(PrismaService).useValue(prismaMock)
       .overrideProvider(AuthService).useValue(authMock)
+      .overrideProvider(BookingsService).useValue(bookingsMock)
+      .overrideProvider(BookingExpiryScheduler).useValue({})
       .compile();
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true, transform: true }));
@@ -96,6 +113,11 @@ describe('health route', () => {
     await request(app.getHttpServer()).get('/api/v1/trips?minDuration=0').expect(400);
   });
 
+  it('keeps unpublished or missing trip details unavailable to the public', async () => {
+    await request(app.getHttpServer()).get('/api/v1/trips/draft-test').expect(404);
+    expect(tripMock.findUnique).toHaveBeenCalledWith(expect.objectContaining({ where: { slug: 'draft-test', status: 'PUBLISHED' } }));
+  });
+
   it('allows only admins to create a trip draft', async () => {
     destinationMock.findMany.mockResolvedValue([{ id: 'destination-parent' }]);
     const payload = { slug: 'trip-test', name: 'Trip TEST', summary: 'TBD', durationDays: 2, itinerary: [{ day: 1, title: 'TBD' }], inclusions: [], exclusions: [], meetingPoint: 'TBD', terms: 'TBD', cancellationPolicy: 'TBD', destinations: [{ destinationId: 'destination-parent', position: 0, isPrimary: true }] };
@@ -105,6 +127,30 @@ describe('health route', () => {
     await request(app.getHttpServer()).post('/api/v1/admin/trips')
       .set('Authorization', `Bearer ${adminToken}`).send(payload).expect(201)
       .expect({ id: 'trip-new', slug: 'trip-test', name: 'Trip TEST', status: 'DRAFT' });
+  });
+
+  it('protects schedule creation and keeps new schedules inactive', async () => {
+    tripMock.findUnique.mockResolvedValue({ id: 'trip-draft', status: 'DRAFT' });
+    const payload = { tripId: 'trip-draft', departureAt: new Date(Date.now() + 86_400_000).toISOString(), capacity: 10, priceIdr: 20_000, minimumPax: 2 };
+    await request(app.getHttpServer()).post('/api/v1/admin/schedules').send(payload).expect(401);
+    const jwt = app.get(JwtService);
+    const adminToken = await jwt.signAsync({ sub: 'admin-1', roles: ['ADMIN'] });
+    await request(app.getHttpServer()).post('/api/v1/admin/schedules').set('Authorization', `Bearer ${adminToken}`).send(payload).expect(201).expect({ id: 'schedule-new', isActive: false });
+  });
+
+  it('allows guest booking and puts status lookup contact details in the request body', async () => {
+    const payload = { scheduleId: 'schedule-test', bookerName: 'Rina TEST', email: 'rina@example.test', phone: '+62812345678', participants: [{ fullName: 'Rina TEST' }] };
+    await request(app.getHttpServer()).post('/api/v1/bookings').set('Origin', 'http://localhost:3000').send(payload).expect(201).expect({ code: '0123456789ABCDEF', status: 'PENDING_DP', totalPriceIdr: 10_000 });
+    await request(app.getHttpServer()).post('/api/v1/bookings/lookup').set('Origin', 'http://localhost:3000').send({ code: '0123456789ABCDEF', email: payload.email, phone: payload.phone }).expect(201);
+    expect(bookingsMock.status).toHaveBeenCalledWith('0123456789ABCDEF', payload.email, payload.phone);
+    await request(app.getHttpServer()).post('/api/v1/bookings/lookup').set('Origin', 'http://localhost:3000').send({ code: '0123456789ABCDEF', email: payload.email, phone: payload.phone, extra: 'reject' }).expect(400);
+  });
+
+  it('restricts booking records to admins', async () => {
+    await request(app.getHttpServer()).get('/api/v1/admin/bookings').expect(401);
+    const jwt = app.get(JwtService);
+    const adminToken = await jwt.signAsync({ sub: 'admin-1', roles: ['ADMIN'] });
+    await request(app.getHttpServer()).get('/api/v1/admin/bookings').set('Authorization', `Bearer ${adminToken}`).expect(200).expect({ items: [], nextCursor: null });
   });
 
   it('denies anonymous and non-admin access to admin routes', async () => {

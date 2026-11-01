@@ -57,6 +57,7 @@ RBAC ditegakkan di API, bukan hanya menyembunyikan tombol di web. Admin memiliki
 - Admin dapat mengaitkan trip ke satu atau beberapa destinasi; urutan kunjungan dapat disusun, dan satu lokasi utama dipilih untuk kartu/listing serta metadata SEO.
 - Arsip/nonaktifkan daerah tidak menghapus histori booking/trip; daerah yang masih dipakai trip terpublikasi harus ditolak penghapusannya atau memerlukan pemindahan terkonfirmasi.
 - Admin dapat membuat/mengubah destination, trip/paket, itinerary, include/exclude, titik kumpul, syarat, kebijakan, dan slug.
+- Trip hanya dapat diterbitkan jika itinerary memiliki satu judul berisi untuk setiap hari sesuai durasinya, satu destinasi utama aktif, dan setidaknya satu jadwal aktif mendatang.
 - Admin dapat mengaktifkan jadwal dengan waktu berangkat, kuota, harga IDR integer, kuota minimum dan status publikasi.
 - Jadwal yang dinonaktifkan tidak dapat menerima booking baru; perubahan pada jadwal berisi peserta memicu alur pemberitahuan dan pilihan peserta.
 - Konten destinasi yang belum diberikan operator tidak dipublikasikan sebagai fakta.

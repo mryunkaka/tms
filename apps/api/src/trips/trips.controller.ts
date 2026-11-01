@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { Public } from '../auth/auth.decorators.js';
 import { TripQueryDto } from './trip-query.dto.js';
 import { TripsService } from './trips.service.js';
@@ -10,4 +10,8 @@ export class TripsController {
   @Public()
   @Get()
   list(@Query() query: TripQueryDto) { return this.trips.listPublic(query); }
+
+  @Public()
+  @Get(':slug')
+  detail(@Param('slug') slug: string) { return this.trips.detailPublic(slug); }
 }

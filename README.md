@@ -21,10 +21,12 @@ Salin `.env.example` menjadi `.env`, lalu isi `DATABASE_URL`, `JWT_ACCESS_SECRET
 
 ```sh
 npm run db:generate
-npm run db:migrate
+npm run db:deploy
 npm run db:seed
 npm run dev
 ```
+
+`db:deploy` menerapkan migration yang sudah tercatat tanpa membuat shadow database. Untuk membuat migration baru dengan `db:migrate`, gunakan role pengembangan PostgreSQL yang diizinkan membuat shadow database.
 
 Web tersedia di `http://localhost:3000`, API di `http://localhost:3001`. Seed tidak mengganti password akun yang telah ada. `npm run db:backup:test` memakai `pg_dump` dan `pg_restore --list`; PostgreSQL client tools harus tersedia di PATH.
 

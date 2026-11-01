@@ -5,6 +5,7 @@ import { DatabaseModule } from './database/database.module.js';
 import { AdminController } from './admin.controller.js';
 import { DestinationsModule } from './destinations/destinations.module.js';
 import { TripsModule } from './trips/trips.module.js';
+import { BookingsModule } from './bookings/bookings.module.js';
 
-@Module({ imports: [DatabaseModule, AuthModule, DestinationsModule, TripsModule], controllers: [HealthController, AdminController] })
+@Module({ imports: [DatabaseModule, AuthModule, DestinationsModule, TripsModule, BookingsModule], controllers: [HealthController, AdminController] })
 export class AppModule {}
