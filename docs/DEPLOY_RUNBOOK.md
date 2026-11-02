@@ -8,7 +8,7 @@ Dokumen ini menjelaskan deployment target ke VPS Ubuntu; go-live tetap menunggu 
 - API dan Next.js dikelola service NSSM `nodejs` (auto-start, bergantung pada PostgreSQL); Nginx existing `WebStack-Nginx` dipakai ulang dan meneruskan TMS pada `http://127.0.0.1:8085`.
 - Port aplikasi langsung hanya loopback: web 3000, API 3001, PostgreSQL 5432. `.env` lokal di root repo di-ignore Git dan tidak boleh disalin ke report.
 - Verifikasi lokal: homepage dan `/api/v1/health` merespons HTTP 200; PHP vhost 8081–8084 tetap merespons HTTP 200. Startup type telah dicek Automatic; laptop belum diuji dengan reboot fisik.
-- `npm run db:backup:test` menguji pembuatan arsip dan daftar `pg_restore`; restore penuh ke database terisolasi belum dilakukan.
+- `npm run db:backup:test` menguji pembuatan arsip dan daftar `pg_restore`. Restore drill lokal ke cluster terisolasi sudah lulus pada 2026-11-02, termasuk perbandingan row count 12 tabel publik; dump sementara masih perlu dihapus manual dari direktori TEMP. Ini bukti pemulihan lokal, bukan pengganti restore drill off-host/VPS sebelum go-live.
 
 **TBD untuk VPS:** domain, alamat IP, storage backup luar server, RPO/RTO dan kebijakan refund. Jangan masukkan secret literal ke dokumen, shell history, Git, atau tiket.
 
