@@ -5,6 +5,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sedang Dikerjakan (On Progress)
 
 - **TMS-034 — [P1] [Tahap 1] [Owner: Engineering] [Tanggal: 2026-11-02]** Audit penuh masih melaporkan 31 advisory low/moderate; `npm audit --omit=dev` bersih (0). Verifikasi registry saat ini menunjukkan Jest 30.5.2 dan Nest CLI 12.0.11 masih membawa `glob@13.0.6`/`minimatch@10.2.6`; advisori resmi menetapkan perbaikan `glob@14.0.2` dan `minimatch@11.0.1`, sementara advisori `deepmerge@4.3.1` belum menetapkan versi perbaikan. npm audit mengusulkan downgrade major untuk toolchain, bukan jalur upgrade kompatibel. Tidak memaksa override lintas major atau downgrade. Tinjau lagi saat upstream memperbarui dependency dan jalankan suite penuh.
+- **TMS-037 — [P0] [Tahap 1] [Owner: Engineering/operator] [Tanggal: 2026-11-02]** Satu nilai yang tampak berasal dari `.env` terkirim di percakapan. Nilai tidak dicatat di repo/laporan; variabel tepatnya tidak dapat dipastikan dari potongan itu. Rotasi semua secret aktif yang mungkin terdampak: password role `tms_app`, `JWT_ACCESS_SECRET`, dan password akun admin yang tersimpan di DB. Mengubah `INITIAL_ADMIN_PASSWORD` saja tidak mereset akun yang sudah ada. Validasi login ulang tanpa mencetak atau mengirim secret.
 
 ## Belum Dikerjakan (To Do)
 
@@ -19,8 +20,6 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ### Tahap 1 — inti monorepo, auth, katalog, booking
 
-- **TMS-012 — [P0] [Tahap 1] [Owner: Engineering] [Tanggal: TBD]** Siapkan monorepo npm workspace `apps/web`, `apps/api`, `packages/shared`, toolchain TypeScript/lint/test/build, validasi env, `.env.example` dan CI lokal lint/test.
-- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: 2026-11-02]** Belum selesai: `createdb` ke DB aktif ditolak karena role `tms_app` tidak punya hak membuat DB; percobaan `initdb` terisolasi sebelumnya gagal pada locale Windows (`utf8_and_win`). Binary 18.6 menyediakan `--no-locale --encoding=UTF8`, tetapi skrip untuk membangun cluster terisolasi/restore ditolak oleh kebijakan eksekusi sebelum berjalan. Pemeriksaan ulang menemukan tidak ada Docker/Podman atau service PostgreSQL sampingan; hanya cluster native aktif yang berjalan. Tidak ada dump/cluster baru atau perubahan konfigurasi. Restore drill masih perlu dijalankan pada lingkungan yang diizinkan; `pg_restore --list` bukan restore.
 
 ### Tahap 2 — pembayaran sandbox, queue, notifikasi
 
@@ -41,6 +40,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 ## Sudah Dilaksanakan (Done)
 
 - **TMS-012 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Membuat npm workspaces untuk web/API/shared, konfigurasi TypeScript/lint/test/build, validasi env dan instruksi lokal. Unit/API/web test serta lint/typecheck/build berhasil.
+- **TMS-013 — [P0] [Tahap 1→3] [Owner: Engineering/ops] [Tanggal: 2026-11-02]** Restore drill PostgreSQL selesai di cluster sementara PostgreSQL 18.6 pada `127.0.0.1:55439`: `pg_dump` custom-format dari database `tms`, `pg_restore --exit-on-error`, lalu row count seluruh 12 tabel publik dibandingkan; semua count cocok dan tidak ada tabel tambahan. Cluster uji dihentikan dan port tidak lagi listen; service/DB aktif tidak diubah. Pembersihan direktori TEMP beserta dump ditolak kebijakan eksekusi sehingga masih menunggu pembersihan manual lokal. Verifikasi arsip saja bukan pengganti bukti restore ini.
 - **TMS-014 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Auth admin, hash password/token refresh, rotasi/revocation, guards/RBAC, CORS/Origin, dan rate limit tersedia. Tes PostgreSQL paralel membuktikan request refresh identik dalam satu proses memakai satu hasil rotasi; penggunaan ulang sesudahnya mencabut keluarga token. Cookie Secure/Origin diuji di unit dan probe HTTP, autentikasi browser tetap perlu diverifikasi sebelum rilis.
 - **TMS-015 — [P1] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Homepage SSR dengan filter, halaman daerah/trip, status booking, metadata, sitemap/robots/JSON-LD dan layout mobile dibuat. Konten bisnis tetap menunggu pemilik.
 - **TMS-017 — [P0] [Tahap 1] [Owner: Codex] [Tanggal: 2026-11-01]** Booking guest, snapshot harga, lock kuota PostgreSQL, scheduler expiry, idempotent release dan acceptance race/expiry sudah diuji dengan PostgreSQL lokal.
@@ -74,6 +74,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 - **2026-11-02:** Memperbaiki deduplikasi refresh paralel dalam proses API setelah uji concurrency menemukan hasil rotasi berlainan; menambah unit/integration test auth concurrency dan tes cookie/origin. Lint, test (46), typecheck, build, schema/deploy migration, booking/auth PostgreSQL race, audit production (0), dan probe route lokal lulus. Restore drill P0 tetap tertahan.
 - **2026-11-02:** Probe same-origin CORS menghasilkan 204 dengan origin eksplisit dan credentials; POST login dari Origin asing menghasilkan 401. Cookie produksi diuji pada unit test, belum melalui browser.
 - **2026-11-02:** `npm audit fix --dry-run` tidak menawarkan update kompatibel untuk 31 advisory dev; remediation otomatis yang disarankan menurunkan versi mayor toolchain, jadi tidak diterapkan.
+- **2026-11-02:** Restore drill dijalankan pada cluster PostgreSQL sementara loopback: `pg_restore --exit-on-error` sukses dan row count 12 tabel publik sama. Cluster dihentikan, port 55439 tertutup, dan service utama tetap berjalan. Direktori TEMP masih berisi dump karena cleanup ditolak kebijakan; secret snippet yang tampak berasal dari `.env` dikirim ke percakapan dan rotasi terkait dicatat sebagai P0.
 - **2026-11-02:** Menutup gap PRD untuk pengurutan destinasi: field integer `sortOrder` dengan default migrasi 0, input admin create/edit, validasi rentang DB dan urutan pohon publik. Tes RED→GREEN meliputi urutan/tie, validasi negatif/pecahan/null/out-of-range, dan input panel. Edit trip menjaga posisi kunjungan yang tersimpan saat urutan katalog berubah; audit destinasi merekam nilai urutan sebelum/sesudah.
 - **2026-11-02:** Migration pengurutan destinasi terpasang di PostgreSQL lokal; lint, 58 tes, typecheck, build, booking/auth DB checks dan validasi schema lulus. Service `nodejs` berjalan dari `D:\Project\tms`; setelah restart, `/`, `/admin`, `/booking/status`, `/api/v1/health`, dan `/api/v1/destinations` HTTP 200.
 - **2026-11-02:** Review independen menemukan edit trip bisa menulis ulang urutan kunjungan saat urutan opsi katalog berubah; helper edit kini mempertahankan posisi tersimpan dan tes regresi lulus. Audit order destinasi juga mencatat nilai lama/baru.
@@ -86,8 +87,7 @@ Sumber kebenaran untuk progres; tanggal menggunakan WITA. `TBD` berarti tanggal/
 
 ## Terblokir (Blocked)
 
-- **TMS-013 — [P0]** Restore drill tertahan: automatic approval review menolak perubahan sementara `pg_hba.conf` yang diminta oleh metode drill. Perintah tidak dijalankan dan konfigurasi tidak berubah. Tidak dicoba jalan pintas lain; butuh metode terisolasi yang disetujui.
-- **Tahap 1 belum dapat dinyatakan selesai** sampai restore drill terverifikasi dan temuan P0 ini ditutup.
+- Pembersihan cluster/dump uji di direktori TEMP belum dilakukan karena perintah penghapusan ditolak kebijakan eksekusi. Cluster sudah dihentikan dan port 55439 tidak listen; hapus hanya direktori `tms-stage1-restore-*` yang dibuat oleh drill ini setelah memastikan tidak ada proses cluster berjalan.
 
 ## Utang Teknis
 

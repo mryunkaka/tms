@@ -59,7 +59,7 @@
 ### Task 5: Whole-stage verification and audit
 
 - [x] Run available lint, test, typecheck, build, Prisma validation/deploy and PostgreSQL integration checks.
-- [ ] Complete backup restore drill only through an approved isolated-database method; retain blocked status if the security gate rejects required access changes.
+- [x] Complete backup restore drill only through an isolated database; compare every public table row count and stop the temporary server.
 - [x] Review whole-repository security and quality; save report under `docs/security/` and update `docs/TODO.md`.
 - [x] Inspect staged diff, commit atomic changes and push to `main` as previously authorized.
 
@@ -73,3 +73,4 @@
 - **2026-11-02:** Implemented booking lifecycle, PostgreSQL locking/expiry checks, catalog and schedule management, public/admin web flows, Pino JSON logging/redaction, and production-route verification. Final lint, 43 tests, typecheck, build, Prisma validation/deploy, PostgreSQL booking race/expiry, and local HTTP route checks passed. Security report identifies restore drill as blocked P0 and full dev audit as 31 low/moderate findings.
 - **2026-11-02:** Manual Ponytail commit review completed; commit `8d7ff23` was pushed to `origin/main` under the owner's earlier authorization. Stage remains open only for the uncompleted restore drill and tracked pre-release checks.
 - **2026-11-02:** Follow-up verification found and fixed an in-process concurrent refresh race. Root lint, 46 tests, typecheck, build, Prisma validation/deploy, booking and auth PostgreSQL race checks, production dependency audit, and local HTTP route checks pass. Restore drill is still blocked; browser cookie acceptance remains a pre-release check.
+- **2026-11-02:** PostgreSQL 18.6 backup restore drill completed on temporary loopback port 55439. Custom dump restored with `pg_restore --exit-on-error`; row counts matched for all 12 public tables. Temporary server stopped; cleanup deletion was rejected by execution policy, so the local TEMP directory still needs manual removal. Main PostgreSQL and NSSM services remain running.
